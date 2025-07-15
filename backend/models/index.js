@@ -26,6 +26,8 @@ db.User = require("./User")(sequelize, DataTypes);
 db.Game = require("./Game")(sequelize, DataTypes);
 db.Transaction = require("./Transaction")(sequelize, DataTypes);
 db.LoginLog = require("./LoginLog")(sequelize, DataTypes); // ✅ Add this
+db.PointRequest = require("./pointrequest")(sequelize, Sequelize.DataTypes);
+
 
 Object.keys(db).forEach((modelName) => {
   if (db[modelName].associate) {

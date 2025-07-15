@@ -1,8 +1,8 @@
 // AdminContent.jsx
-import Users from "./admin/Users";
-import RefillRequests from "./admin/RefillRequests";
-import WithdrawRequests from "./admin/WithdrawRequests";
-import GameHistory from "./admin/GameHistory";
+import Users from "./Users";
+import RefillRequests from "./RefillRequests";
+import WithdrawRequests from "./WithdrawRequests";
+import GameHistory from "./GameHistory";
 
 export default function AdminContent({ selected }) {
   switch (selected) {

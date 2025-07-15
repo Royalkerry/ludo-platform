@@ -1,5 +1,5 @@
 import React from "react";
-import { boardMap } from "../game/boardMap";
+import { boardMap } from "./boardMap";
 
 function getColorForType(type) {
   switch (type) {

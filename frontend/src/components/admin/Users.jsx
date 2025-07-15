@@ -41,18 +41,22 @@ export default function Users() {
     }
   };
   // sub suer
-  const fetchSubUsers = async (parentId) => {
+  const toggleSubUsers = async (parentId) => {
+    if (expandedRows[parentId]) {
+      const updated = { ...expandedRows };
+      delete updated[parentId];
+      setExpandedRows(updated);
+      return;
+    }
+  
     try {
       const res = await axios.get(`/admin/downline-users?parentId=${parentId}`, axiosConfig);
-      setExpandedRows((prev) => ({
-        ...prev,
-        [parentId]: res.data
-      }));
+      setExpandedRows((prev) => ({ ...prev, [parentId]: res.data }));
     } catch (err) {
-      console.error("Failed to fetch sub-users", err);
+      console.error("❌ Failed to fetch sub-users:", err);
+      alert("Failed to load sub-users");
     }
   };
-
 
   useEffect(() => {
     if (token) fetchUsers();
@@ -69,8 +73,13 @@ export default function Users() {
     e.preventDefault();
     try {
       await axios.post("/admin/create", form, axiosConfig);
+      alert(`✅ User "${form.username}" created successfully`);
       setForm({ username: "", password: "", role: "user" });
-      fetchUsers();
+      await fetchUsers();
+      if (currentUser?.id) {
+        fetchSubUsers(currentUser.id);
+      }
+      
     } catch (err) {
       console.error("❌ Failed to create user:", err);
       alert("Failed to create user");
@@ -118,7 +127,7 @@ export default function Users() {
 
         <button style={tabBtn} onClick={() => setView("users")}>👥 Show Users</button>
 
-        <button style={tabBtn} onClick={() => setView("bulk")}>💸 Bulk Transaction</button>
+        <button style={tabBtn} onClick={() => setView("bulk")}>💸 Banking</button>
       </div>
 
       {/* 👤 Create Form */}
@@ -179,6 +188,7 @@ export default function Users() {
               ? "#e6b800"
               : "inherit"
           }}>
+            {(u.role !== "user") && (
             <button
              style={{
               marginRight: "5px",
@@ -190,26 +200,11 @@ export default function Users() {
               lineHeight: 1,
               color: "red",
             }}
-              onClick={() => {
-                if (expandedRows[u.id]) {
-                  const updated = { ...expandedRows };
-                  delete updated[u.id];
-                  setExpandedRows(updated);
-                } else {
-                  axios
-                    .get(`/admin/downline-users?parentId=${u.id}`, axiosConfig)
-                    .then((res) => {
-                      setExpandedRows((prev) => ({ ...prev, [u.id]: res.data }));
-                    })
-                    .catch((err) => {
-                      console.error("Failed to fetch sub-users", err);
-                      alert("Failed to fetch sub-users");
-                    });
-                }
-              }}
+            onClick={() => toggleSubUsers(u.id)}
             >
               {expandedRows[u.id] ? "-" : "+"}
             </button>
+            )}
             {u.username}
           </td>
           <td style={cellStyle}>{u.role}</td>

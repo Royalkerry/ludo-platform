@@ -1,7 +1,7 @@
 // src/App.jsx
 import React from "react";
-import Board3D from "./components/Board3D";
-import Dice from "./components/Dice";
+import Board3D from "../src/game/Board3D";
+import Dice from "../src/game/Dice";
 import useGameStore from "./store/gameStore";
 import socket from "./socket";
 

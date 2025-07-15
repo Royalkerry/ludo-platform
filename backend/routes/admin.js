@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const { User, Transaction } = require("../models");
+const { User, Transaction, PointRequest } = require("../models");
 const { verifyTokenAndRole } = require("../middleware/auth");
+
 
 // ✅ Get current admin user info
 router.get(
@@ -26,34 +27,23 @@ router.get(
   verifyTokenAndRole(["creator", "superadmin", "admin", "master"]),
   async (req, res) => {
     try {
-      const currentUserId = req.user.id;
+      const parentId = req.query.parentId || req.user.id;
+
       const downlineUsers = await User.findAll({
-        where: { uplinkId: currentUserId },
-        attributes: ["id", "username", "role", "points", "creditLimit", "isp", "deviceId", "ip", "status", "createdAt"]
-      });// Step 2: For each user, fetch their own downline
-      const usersWithChildren = await Promise.all(
-        downlineUsers.map(async (user) => {
-          const subUsers = await User.findAll({
-            where: { uplinkId: user.id },
-            attributes: ["id", "username", "role", "points", "creditLimit", "isp", "deviceId", "ip", "status", "createdAt"]
-          });
-          return {
-            ...user.toJSON(),
-            children: subUsers
-          };
-        })
-      );
+        where: { uplinkId: parentId },
+        attributes: [
+          "id", "username", "role", "points", "creditLimit",
+          "isp", "deviceId", "ip", "status", "createdAt"
+        ]
+      });
 
-      res.json(usersWithChildren);
-
-      // res.json(downlineUsers);
+      res.json(downlineUsers);
     } catch (err) {
-      console.error(err);
+      console.error("❌ Downline fetch error:", err);
       res.status(500).json({ error: "Failed to fetch downline users" });
     }
   }
 );
-
 // ✅ Create new user (downlink)
 router.post(
   "/create",
@@ -311,7 +301,7 @@ router.post("/bulk-transact", verifyTokenAndRole(["creator", "superadmin", "admi
     res.status(500).json({ error: "Bulk transaction failed" });
   }
 });
-
+//credir limit 
 router.post("/set-credit-limit", verifyTokenAndRole(["creator", "superadmin", "admin", "master"]), async (req, res) => {
   const { userId, creditLimit } = req.body;
 

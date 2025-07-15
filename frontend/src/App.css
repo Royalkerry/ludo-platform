@@ -40,3 +40,24 @@
 .read-the-docs {
   color: #888;
 }
+
+.glow-text {
+  font-weight: bold;
+  color: #fff;
+  font-size: 16px;
+  animation: glow 1.5s ease-in-out infinite alternate;
+}
+
+.glow-text .role {
+  color: #ffd700;
+  margin-left: 5px;
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 0 0 5px #ef320a, 0 0 10px #ef320a, 0 0 15px #ff6f00;
+  }
+  to {
+    text-shadow: 0 0 10px #ff8f00, 0 0 20px #ff6f00, 0 0 30px #ef320a;
+  }
+}

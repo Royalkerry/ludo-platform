@@ -44,7 +44,11 @@ export default function AdminSidebar({ onSelect }) {
         height: "100vh"
       }}
     >
-      <h2>👤 {user?.username || "Guest"}</h2>
+      <h2>👤 {user?.username}</h2>
+      <h3 style={{ color: "#f5b20a", marginTop: "1px" }}>{user.role}</h3>
+      
+
+
       {points !== null && (
         <p style={{ marginTop: "-10px", marginBottom: "10px", color: "#0f0" }}>
           💎 Points: <strong>{points}</strong>
@@ -81,8 +85,12 @@ export default function AdminSidebar({ onSelect }) {
 
       <ul style={{ listStyle: "none", padding: 0, marginTop: "20px" }}>
         <li onClick={() => onSelect("users")} style={listStyle}>👥 Users</li>
-        <li onClick={() => onSelect("refillRequests")} style={listStyle}>💰 Refill Requests</li>
-        <li onClick={() => onSelect("withdrawRequests")} style={listStyle}>💸 Withdraw Requests</li>
+        {user?.role === "master" && (
+    <>
+      <li onClick={() => onSelect("refillRequests")} style={listStyle}>💰 Refill Requests</li>
+      <li onClick={() => onSelect("withdrawRequests")} style={listStyle}>💸 Withdraw Requests</li>
+    </>
+  )}
         <li onClick={() => onSelect("gameHistory")} style={listStyle}>🎮 Game History</li>
       </ul>
 

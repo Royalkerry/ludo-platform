@@ -8,6 +8,7 @@ const db = require("./models");
 const setupSocket = require("./socket");
 
 const adminRoutes = require("./routes/admin");
+const userRoutes = require("./routes/user");
 const transactionRoutes = require("./routes/transaction");
 const authRoutes = require("./routes/auth");
 const gameRoutes = require("./routes/game");
@@ -38,6 +39,7 @@ app.use(express.json());
 
 // ✅ API Routes
 app.use("/api/admin", adminRoutes);
+app.use("/api/user", userRoutes);    // Regular users only
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/games", gameRoutes);
