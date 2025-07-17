@@ -1,13 +1,18 @@
+@import "tailwindcss";
+/* @import "./game/styles/global.css"; */
+
+
 body {
   margin: 0;
   background-color: #111;
   color: white;
   font-family: sans-serif;
-  overflow: hidden;
+  /* overflow: hidden; */
+  overflow-x: hidden; 
 }
 
 button {
-  background: #444;
+  /* background: #444; */
   color: white;
   border: none;
   border-radius: 5px;

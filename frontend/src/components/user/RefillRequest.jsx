@@ -1,7 +1,7 @@
 // src/pages/RefillRequest.jsx
 import React, { useState } from "react";
 import axios from "@/utils/axiosInstance";
-import LobbySidebar from "@/components/user/LobbySidebar"; 
+import Sidebar from "../user/layout/Sidebar";
 
 export default function RefillRequest() {
   const [amount, setAmount] = useState("");
@@ -23,7 +23,7 @@ export default function RefillRequest() {
   };
 
   return (<div style={{ display: "flex", height: "100vh" }}>
-    <LobbySidebar /> {/* ✅ Sidebar reused */}
+    <Sidebar /> {/* ✅ Sidebar reused */}
     <div style={{ flex: 1, padding: "40px" }}>
       <h2 className="text-xl font-bold mb-4">💸 Refill Points</h2>
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "@/utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
-import LobbySidebar from "@/components/user/LobbySidebar";
+import Sidebar from "../user/layout/Sidebar";
 
 export default function WithdrawRequest() {
   const [amount, setAmount] = useState("");
@@ -26,7 +26,7 @@ export default function WithdrawRequest() {
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       {/* ✅ Reused sidebar with user info */}
-      <LobbySidebar />
+      <Sidebar />
 
       <div style={{ flex: 1, padding: "40px", color: "#333" }}>
         <h2 className="text-xl font-bold mb-4">🧾 Withdraw Points</h2>

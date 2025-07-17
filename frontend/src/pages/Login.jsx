@@ -2,19 +2,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "@/utils/axiosInstance";
 
-
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  
-  
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      // Make sure the URL matches your backend auth route.
       const res = await axios.post("/auth/login", {
         username,
         password,
@@ -22,19 +18,14 @@ export default function Login() {
 
       const { user, token } = res.data;
 
-      // Allow only user roles here.
       if (!["user"].includes(user?.role)) {
         setError("Contact Uplink for access");
         return;
       }
 
-      // Save token and user data correctly into localStorage.
       localStorage.setItem("userToken", token);
-      // IMPORTANT: Save user under the key "user" so that sidebars/components reading from localStorage work.
       localStorage.setItem("user", JSON.stringify(user));
 
-      
-      // Redirect to lobby dashboard.
       navigate("/lobby");
     } catch (err) {
       console.error("Login error:", err);
@@ -43,17 +34,17 @@ export default function Login() {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.heading}> Login</h2>
-        {error && <p style={styles.error}>{error}</p>}
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
+      <div className="bg-white p-8 rounded-lg w-full max-w-md shadow-md">
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h2>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleLogin}>
           <input
             type="text"
             placeholder="Username or Email"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            style={styles.input}
+            className="w-full px-4 py-2 mb-4 border border-gray-300 rounded text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
           <input
@@ -61,58 +52,17 @@ export default function Login() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
+            className="w-full px-4 py-2 mb-4 border border-gray-300 rounded text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-          <button type="submit" style={styles.button}>Login</button>
+          <button
+            type="submit"
+            className="w-full bg-gray-900 text-white py-2 rounded hover:bg-gray-800 transition"
+          >
+            Login
+          </button>
         </form>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    height: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#111",
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: "30px",
-    borderRadius: "8px",
-    width: "100%",
-    maxWidth: "400px",
-    boxShadow: "0 0 10px rgba(0,0,0,0.3)",
-  },
-  heading: {
-    marginBottom: "20px",
-    textAlign: "center",
-    color: "#333",
-  },
-  input: {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "15px",
-    border: "1px solid #ccc",
-    borderRadius: "5px",
-    fontSize: "16px",
-  },
-  button: {
-    width: "100%",
-    padding: "10px",
-    backgroundColor: "#111",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    fontSize: "16px",
-    cursor: "pointer",
-  },
-  error: {
-    color: "red",
-    marginBottom: "10px",
-    textAlign: "center",
-  },
-};

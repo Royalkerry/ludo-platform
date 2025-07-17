@@ -1,8 +1,9 @@
+// src/components/admin/AdminSidebar.jsx
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import axios from "@/utils/axiosInstance";
 
-export default function AdminSidebar({ onSelect }) {
+export default function AdminSidebar({ onSelect, isOpen, onClose }) {
   const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("adminToken");
   const navigate = useNavigate();
@@ -12,9 +13,7 @@ export default function AdminSidebar({ onSelect }) {
   const fetchPoints = async () => {
     try {
       const res = await axios.get("/admin/me", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` },
       });
       setPoints(res.data.points);
     } catch (err) {
@@ -33,89 +32,105 @@ export default function AdminSidebar({ onSelect }) {
   };
 
   return (
-    <div
-      style={{
-        width: "220px",
-        background: "#111",
-        color: "#fff",
-        padding: "20px",
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh"
-      }}
-    >
-      <h2>👤 {user?.username}</h2>
-      <h3 style={{ color: "#f5b20a", marginTop: "1px" }}>{user.role}</h3>
-      
-
-
-      {points !== null && (
-        <p style={{ marginTop: "-10px", marginBottom: "10px", color: "#0f0" }}>
-          💎 Points: <strong>{points}</strong>
-        </p>
-      )}
-      {user?.role === "creator" && (
-  <button
-    onClick={async () => {
-      const amt = parseInt(prompt("Enter amount to generate:"), 10);
-      if (!amt || amt <= 0) return alert("Enter valid amount");
-      try {
-        const res = await axios.post("/admin/generate-points", { amount: amt }, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        alert(res.data.message);
-        setPoints(res.data.points); // update live
-      } catch (err) {
-        alert("❌ Failed to generate points");
-      }
-    }}
-    style={{
-      marginBottom: "10px",
-      backgroundColor: "#009933",
-      color: "#fff",
-      padding: "6px 10px",
-      border: "none",
-      borderRadius: "4px",
-      cursor: "pointer"
-    }}
-  >
-    ➕ Generate Points
-  </button>
-)}
-
-      <ul style={{ listStyle: "none", padding: 0, marginTop: "20px" }}>
-        <li onClick={() => onSelect("users")} style={listStyle}>👥 Users</li>
-        {user?.role === "master" && (
     <>
-      <li onClick={() => onSelect("refillRequests")} style={listStyle}>💰 Refill Requests</li>
-      <li onClick={() => onSelect("withdrawRequests")} style={listStyle}>💸 Withdraw Requests</li>
-    </>
-  )}
-        <li onClick={() => onSelect("gameHistory")} style={listStyle}>🎮 Game History</li>
-      </ul>
+      {/* Mobile overlay */}
+      <div
+        className={`fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden transition-opacity duration-300 ${
+          isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+        onClick={onClose}
+      ></div>
 
-      <button
-        onClick={handleLogout}
-        style={{
-          marginTop: "auto",
-          color: "#fff",
-          background: "#f00",
-          border: "none",
-          padding: "10px",
-          borderRadius: "5px",
-          cursor: "pointer"
-        }}
+      {/* Sidebar */}
+      <div
+        className={`fixed top-0 left-0 z-40 h-full w-64 bg-gray-900 text-white px-4 py-5 flex flex-col shadow-lg transform transition-transform duration-300
+          ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:static md:h-screen`}
       >
-        Logout
-      </button>
-    </div>
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-1">👤 {user?.username}</h2>
+          <h3 className="text-sm text-yellow-400 capitalize">{user?.role}</h3>
+          {points !== null && (
+            <p className="text-green-400 mt-2 text-sm">
+              💎 Points: <strong>{points}</strong>
+            </p>
+          )}
+        </div>
+
+        {user?.role === "creator" && (
+          <button
+            onClick={async () => {
+              const amt = parseInt(prompt("Enter amount to generate:"), 10);
+              if (!amt || amt <= 0) return alert("Enter valid amount");
+              try {
+                const res = await axios.post(
+                  "/admin/generate-points",
+                  { amount: amt },
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
+                alert(res.data.message);
+                setPoints(res.data.points);
+              } catch (err) {
+                alert("❌ Failed to generate points");
+              }
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded mb-4 text-sm"
+          >
+            ➕ Generate Points
+          </button>
+        )}
+
+        <ul className="space-y-2 text-sm">
+          <li
+            className="cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
+            onClick={() => {
+              onSelect("users");
+              onClose();
+            }}
+          >
+            👥 Users
+          </li>
+
+          {user?.role === "master" && (
+            <>
+              <li
+                className="cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
+                onClick={() => {
+                  onSelect("refillRequests");
+                  onClose();
+                }}
+              >
+                💰 Refill Requests
+              </li>
+              <li
+                className="cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
+                onClick={() => {
+                  onSelect("withdrawRequests");
+                  onClose();
+                }}
+              >
+                💸 Withdraw Requests
+              </li>
+            </>
+          )}
+
+          <li
+            className="cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
+            onClick={() => {
+              onSelect("gameHistory");
+              onClose();
+            }}
+          >
+            🎮 Game History
+          </li>
+        </ul>
+
+        <button
+          onClick={handleLogout}
+          className="mt-auto bg-red-600 hover:bg-red-700 text-white py-2 rounded text-sm"
+        >
+          🚪 Logout
+        </button>
+      </div>
+    </>
   );
 }
-
-const listStyle = {
-  margin: "10px 0",
-  cursor: "pointer",
-  padding: "6px",
-  borderRadius: "4px",
-  transition: "background 0.2s",
-};

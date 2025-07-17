@@ -1,6 +1,6 @@
 // src/components/admin/GameHistory.jsx
 import React, { useEffect, useState } from "react";
-import axios from "@/utils/axiosInstance"; // 
+import axios from "@/utils/axiosInstance";
 
 export default function GameHistory() {
   const [games, setGames] = useState([]);
@@ -24,46 +24,44 @@ export default function GameHistory() {
     fetchHistory();
   }, [token]);
 
-  if (loading) return <p>Loading...</p>;
-
   return (
-    <div style={{ padding: "20px", color: "#333" }}>
-      <h2>🎮 Game History</h2>
-      {games.length === 0 ? (
-        <p>No game records found.</p>
+    <div className="p-4 w-full">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">🎮 Game History</h2>
+
+      {loading ? (
+        <p className="text-gray-600">Loading...</p>
+      ) : games.length === 0 ? (
+        <div className="text-center text-gray-500 italic">No game records found.</div>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse", marginTop: "10px" }}>
-          <thead>
-            <tr style={{ backgroundColor: "#eee" }}>
-              <th style={cell}>Room</th>
-              <th style={cell}>Players</th>
-              <th style={cell}>Winner</th>
-              <th style={cell}>Points</th>
-              <th style={cell}>Type</th>
-              <th style={cell}>Ended At</th>
-            </tr>
-          </thead>
-          <tbody>
-            {games.map((g) => (
-              <tr key={g.id}>
-                <td style={cell}>{g.roomId}</td>
-                <td style={cell}>
-                  {g.players?.map((p) => p.username).join(", ")}
-                </td>
-                <td style={cell}>{g.winnerId}</td>
-                <td style={cell}>{g.pointsWon}</td>
-                <td style={cell}>{g.gameType}</td>
-                <td style={cell}>{new Date(g.endedAt).toLocaleString()}</td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border rounded shadow-sm text-sm">
+            <thead>
+              <tr className="bg-gray-200 text-gray-700">
+                <th className="px-4 py-3 border text-left">🏠 Room</th>
+                <th className="px-4 py-3 border text-left">👥 Players</th>
+                <th className="px-4 py-3 border text-left">🏆 Winner</th>
+                <th className="px-4 py-3 border text-left">💎 Points</th>
+                <th className="px-4 py-3 border text-left">🎲 Type</th>
+                <th className="px-4 py-3 border text-left">🕒 Ended At</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {games.map((g) => (
+                <tr key={g.id} className="hover:bg-gray-50">
+                  <td className="border px-4 py-2">{g.roomId}</td>
+                  <td className="border px-4 py-2">{g.players?.map((p) => p.username).join(", ")}</td>
+                  <td className="border px-4 py-2">{g.winnerId}</td>
+                  <td className="border px-4 py-2 text-green-700 font-semibold">{g.pointsWon}</td>
+                  <td className="border px-4 py-2 capitalize">{g.gameType}</td>
+                  <td className="border px-4 py-2 text-gray-600">
+                    {new Date(g.endedAt).toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
 }
-
-const cell = {
-  border: "1px solid #ccc",
-  padding: "8px",
-};

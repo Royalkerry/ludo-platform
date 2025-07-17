@@ -9,21 +9,29 @@ import Login from "./pages/login";
 import RefillRequest from "./components/user/RefillRequest";
 import WithdrawRequest from "./components/user/WithdrawRequest";
 import MyRequests from "./components/user/MyRequests";
-
+import ResponsiveLayout from "./components/user/layout/ResponsiveLayout";
+import PlayPage from "./components/user/Play";
 
 export default function Root() {
   return (
     <Routes>
+      {/* Public Route */}
       <Route path="/" element={<Login />} />
-      <Route path="/lobby" element={<Lobby />} />
-      <Route path="/game" element={<App />} />
-      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      <Route path="/login" element={<Login />} />
       <Route path="/admin-login" element={<AdminLogin />} />
-      <Route path="/refill" element={<RefillRequest />} />
-      <Route path="/withdraw" element={<WithdrawRequest />} />
-      <Route path="/my-requests" element={<MyRequests />} />
 
-      {/* add more routes as needed */}
+      {/* Layout-Wrapped Routes (for user) */}
+      <Route element={<ResponsiveLayout />}>
+        <Route path="/lobby" element={<Lobby />} />
+        <Route path="/refill" element={<RefillRequest />} />
+        <Route path="/withdraw" element={<WithdrawRequest />} />
+        <Route path="/my-requests" element={<MyRequests />} />
+      </Route>
+
+      {/* Game and Admin */}
+      {/* <Route path="/game" element={<App />} /> */}
+      <Route path="/play" element={<PlayPage />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
     </Routes>
   );
 }

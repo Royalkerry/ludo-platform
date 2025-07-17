@@ -1,7 +1,7 @@
 import React from "react";
-import Sidebar from "./LobbySidebar";
 import MatchOptions from "./MatchOptions";
 import useRoleGuard from "@/hooks/useRoleGuard";
+import Sidebar from "../user/layout/Sidebar";
 
 
 export default function Lobby() {

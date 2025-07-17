@@ -1,34 +1,6 @@
-// src/App.jsx
-import React from "react";
-import Board3D from "../src/game/Board3D";
-import Dice from "../src/game/Dice";
-import useGameStore from "./store/gameStore";
-import socket from "./socket";
+// src/App.jsx (optional)
+const App = () => {
+  return <div>Welcome to Ludo Platform</div>;
+};
 
-export default function App() {
-  const updatePawnPosition = useGameStore((s) => s.updatePawnPosition);
-  const resetGame = useGameStore((s) => s.resetGame);
-
-  React.useEffect(() => {
-    socket.on("pawnMoved", ({ id, index }) => {
-      updatePawnPosition(id, index);
-    });
-
-    socket.on("gameEnded", ({ roomId, winnerId }) => {
-      alert(`🏆 Game over! Winner: ${winnerId}`);
-      resetGame();
-    });
-
-    return () => {
-      socket.off("pawnMoved");
-      socket.off("gameEnded");
-    };
-  }, [updatePawnPosition, resetGame]);
-
-  return (
-    <div style={{ width: "100vw", height: "100vh", background: "#111" }}>
-      <Board3D />
-      <Dice />
-    </div>
-  );
-}
+export default App;

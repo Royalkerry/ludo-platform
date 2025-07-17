@@ -41,46 +41,49 @@ export default function WithdrawalRequests() {
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">🧾 Withdrawal Requests</h2>
+    <div className="w-full">
+      <h2 className="text-2xl font-semibold text-gray-800 mb-6">🧾 Withdrawal Requests</h2>
+
       {loading ? (
-        <p>Loading...</p>
+        <div className="text-gray-500">Loading...</div>
       ) : requests.length === 0 ? (
-        <p>No withdrawal requests pending.</p>
+        <div className="text-gray-500">No withdrawal requests pending.</div>
       ) : (
-        <table className="min-w-full border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="px-4 py-2 border">User</th>
-              <th className="px-4 py-2 border">Amount</th>
-              <th className="px-4 py-2 border">Note</th>
-              <th className="px-4 py-2 border">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {requests.map((r) => (
-              <tr key={r.id} className="text-center">
-                <td className="border px-4 py-2">{r.user?.username}</td>
-                <td className="border px-4 py-2">{r.amount}</td>
-                <td className="border px-4 py-2">{r.note || "-"}</td>
-                <td className="border px-4 py-2 space-x-2">
-                  <button
-                    onClick={() => handleApprove(r.id)}
-                    className="bg-green-600 text-white px-3 py-1 rounded"
-                  >
-                    ✅ Approve
-                  </button>
-                  <button
-                    onClick={() => handleReject(r.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded"
-                  >
-                    ❌ Reject
-                  </button>
-                </td>
+        <div className="overflow-x-auto rounded-lg border border-gray-300 shadow-sm bg-white">
+          <table className="min-w-full divide-y divide-gray-200 text-sm text-left">
+            <thead className="bg-gray-100 text-gray-700">
+              <tr>
+                <th className="px-4 py-3 font-medium">👤 User</th>
+                <th className="px-4 py-3 font-medium">💸 Amount</th>
+                <th className="px-4 py-3 font-medium">📝 Note</th>
+                <th className="px-4 py-3 font-medium">⚙️ Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {requests.map((r) => (
+                <tr key={r.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">{r.user?.username}</td>
+                  <td className="px-4 py-3 text-green-600 font-semibold">₹{r.amount}</td>
+                  <td className="px-4 py-3">{r.note || "-"}</td>
+                  <td className="px-4 py-3 space-x-2">
+                    <button
+                      onClick={() => handleApprove(r.id)}
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs"
+                    >
+                      ✅ Approve
+                    </button>
+                    <button
+                      onClick={() => handleReject(r.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+                    >
+                      ❌ Reject
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

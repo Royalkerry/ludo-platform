@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "@/utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
-import LobbySidebar from "@/components/user/LobbySidebar";
+import Sidebar from "../user/layout/Sidebar";
 
 export default function MyRequests() {
   const [requests, setRequests] = useState([]);
@@ -22,7 +22,7 @@ export default function MyRequests() {
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       {/* ✅ Reused Sidebar with user name and balance */}
-      <LobbySidebar />
+      <Sidebar />
 
       {/* Main content */}
       <div style={{ flex: 1, padding: "40px", color: "#333" }}>

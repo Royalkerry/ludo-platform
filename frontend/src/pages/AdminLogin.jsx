@@ -29,7 +29,7 @@ export default function AdminLogin() {
       // Save token and user data correctly into localStorage.
       localStorage.setItem("adminToken", token);
       // IMPORTANT: Save user under the key "user" so that sidebars/components reading from localStorage work.
-      localStorage.setItem("user", JSON.stringify(user));
+      // localStorage.setItem("user", JSON.stringify(user));
 
       // Redirect to admin dashboard.
       navigate("/admin/dashboard");
