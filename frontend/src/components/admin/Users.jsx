@@ -79,7 +79,7 @@ export default function Users() {
   };
 
   return (
-    <div className="p-4 text-black">
+    <div className="p-4 text-black bg-amber-50">
   {/* Tabs */}
   <div className="mb-4 flex flex-wrap gap-2">
     <button className="bg-orange-600 text-white px-2 py-1 text-xs rounded" onClick={() => { setSelectedUserId(null); setView("transactions"); }}>
@@ -106,7 +106,7 @@ export default function Users() {
       <h2 className="text-xl font-semibold mb-4">👥 Downline Users</h2>
       {error && <p className="text-red-600">{error}</p>}
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-blue-50">
         <table className="min-w-full border border-gray-300 text-xs">
           <thead className="bg-orange-600 text-white">
             <tr>

@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path';
+
 import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
+
+const socketURL = process.env.VITE_BACKEND_SOCKET_URL || "http://localhost:5000";
 export default defineConfig({
   plugins: [react(),tailwindcss()],
   
@@ -11,9 +14,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  server: {
-    host: '0.0.0.0'
-  }
+  
 })
 
 // change it when upload in server 

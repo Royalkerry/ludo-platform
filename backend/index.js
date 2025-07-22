@@ -13,6 +13,7 @@ const transactionRoutes = require("./routes/transaction");
 const authRoutes = require("./routes/auth");
 const gameRoutes = require("./routes/game");
 const loginDetailRoutes = require("./routes/logindetail");
+const matchmakingRoutes = require("./routes/matchmaking");
 
 dotenv.config();
 
@@ -36,6 +37,9 @@ app.use(cors(corsOptions));
 
 // ✅ Middleware
 app.use(express.json());
+
+//matchmaking 
+app.use("/api/matchmaking", matchmakingRoutes);
 
 // ✅ API Routes
 app.use("/api/admin", adminRoutes);

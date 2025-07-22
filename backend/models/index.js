@@ -27,6 +27,8 @@ db.Game = require("./Game")(sequelize, DataTypes);
 db.Transaction = require("./Transaction")(sequelize, DataTypes);
 db.LoginLog = require("./LoginLog")(sequelize, DataTypes); // ✅ Add this
 db.PointRequest = require("./pointrequest")(sequelize, Sequelize.DataTypes);
+db.GameRoom = require("./GameRoom")(sequelize, DataTypes);
+db.GamePlayer = require("./GamePlayer")(sequelize, DataTypes);
 
 
 Object.keys(db).forEach((modelName) => {

@@ -14,7 +14,11 @@ const DiceRolled = (
   };
 
   // if dice is 6 and all are at home track.
-  if (diceNumber === 6 && playerPositions[currentPlayer].every(position => position > 100)) {
+  if (
+    diceNumber === 6 &&
+    Array.isArray(playerPositions[currentPlayer]) &&
+    playerPositions[currentPlayer].every((position) => position > 100)
+  )  {
     setTimeout(() => {
       diceNumberValue.current = 0;
       nextTurn();
