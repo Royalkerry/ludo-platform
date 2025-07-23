@@ -27,9 +27,9 @@ export default function MatchOptions() {
     setShowPopup(true);
   };
 
-  const handleMatchSuccess = (roomId) => {
+  const handleMatchSuccess = (roomId, players) => {
     setShowPopup(false);
-    navigate(`/play?roomId=${roomId}`);
+    navigate(`/play?roomId=${roomId}`, { state: { players } }); // edit kiya board k liye 
   };
 
   const changePoints = (delta) => {

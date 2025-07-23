@@ -100,21 +100,21 @@
   padding: 10px;
   transform: scale(0.8);
   grid-template-areas: 
-    'yh yh yh yh yh yh t24 t25 t26 gh gh gh gh gh gh'
-    'yh yh yh yh yh yh t23 g1 t27 gh gh gh gh gh gh'
-    'yh yh yh yh yh yh t22 g2 t28 gh gh gh gh gh gh'
-    'yh yh yh yh yh yh t21 g3 t29 gh gh gh gh gh gh'
-    'yh yh yh yh yh yh t20 g4 t30 gh gh gh gh gh gh'
-    'yh yh yh yh yh yh t19 g5 t31 gh gh gh gh gh gh'
-    't13 t14 t15 t16 t17 t18 ww ww ww t32 t33 t34 t35 t36 t37'
-    't12 y1 y2 y3 y4 y5 ww ww ww b5 b4 b3 b2 b1 t38'
-    't11 t10 t9 t8 t7 t6 ww ww ww t44 t43 t42 t41 t40 t39'
-    'rh rh rh rh rh rh t5 r5 t45 bh bh bh bh bh bh'
-    'rh rh rh rh rh rh t4 r4 t46 bh bh bh bh bh bh'
-    'rh rh rh rh rh rh t3 r3 t47 bh bh bh bh bh bh'
-    'rh rh rh rh rh rh t2 r2 t48 bh bh bh bh bh bh'
-    'rh rh rh rh rh rh t1 r1 t49 bh bh bh bh bh bh'
-    'rh rh rh rh rh rh t52 t51 t50 bh bh bh bh bh bh';
+  'rh rh rh rh rh rh t24 t25 t26 gh gh gh gh gh gh'
+  'rh rh rh rh rh rh t23 g1 t27 gh gh gh gh gh gh'
+  'rh rh rh rh rh rh t22 g2 t28 gh gh gh gh gh gh'
+  'rh rh rh rh rh rh t21 g3 t29 gh gh gh gh gh gh'
+  'rh rh rh rh rh rh t20 g4 t30 gh gh gh gh gh gh'
+  'rh rh rh rh rh rh t19 g5 t31 gh gh gh gh gh gh'
+  't13 t14 t15 t16 t17 t18 ww ww ww t32 t33 t34 t35 t36 t37'
+  't12 r1 r2 r3 r4 r5 ww ww ww y5 y4 y3 y2 y1 t38'
+  't11 t10 t9 t8 t7 t6 ww ww ww t44 t43 t42 t41 t40 t39'
+  'bh bh bh bh bh bh t5 b5 t45 yh yh yh yh yh yh'
+  'bh bh bh bh bh bh t4 b4 t46 yh yh yh yh yh yh'
+  'bh bh bh bh bh bh t3 b3 t47 yh yh yh yh yh yh'
+  'bh bh bh bh bh bh t2 b2 t48 yh yh yh yh yh yh'
+  'bh bh bh bh bh bh t1 b1 t49 yh yh yh yh yh yh'
+  'bh bh bh bh bh bh t52 t51 t50 yh yh yh yh yh yh';
 }
 
 .track{
@@ -175,30 +175,4 @@
   #board {
     transform: scale(0.5); /* Zoom level for mobile view */
   }
-}
-.dice-panel {
-  width: 100%;
-  height: 100%;
-  padding: 4px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0,0,0,0.05);
-  border-radius: 8px;
-}
-
-.player-name {
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-  text-align: center;
-}
-
-.dice-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }

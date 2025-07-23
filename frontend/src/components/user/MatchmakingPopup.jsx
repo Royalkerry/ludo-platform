@@ -45,14 +45,14 @@ export default function MatchmakingPopup({
     });
 
     socket.on("color_selection_start", ({ roomId, availableColors, players }) => {
-      console.log("🎨 color_selection_start received:", { roomId, availableColors, players });
+    
       const normalizedPlayers = players.map((p) => ({
         userId: p.userId || p.id,
         name: p.name,
         avatar: p.avatar || "👤",
         selectedColor: p.selectedColor || null,
       }));
-      console.log("🎨 color_selection_start normalized:", normalizedPlayers);
+     
       setRoomId(roomId);
       setPlayers(normalizedPlayers);
       setLockedColors([]);
@@ -99,7 +99,7 @@ export default function MatchmakingPopup({
       userId: user.id,
       color,
     });
-    console.log(`🎨 Emitted select_color: roomId=${roomId}, userId=${user.id}, color=${color}`);
+   
   };
 
   return (

@@ -25,10 +25,7 @@ module.exports = (io) => {
       if (!waitingPlayers[key]) waitingPlayers[key] = [];
 
       const alreadyInQueue = waitingPlayers[key].some(p => p.userId === userId);
-      if (alreadyInQueue) {
-        console.log(`⚠️ User ${userId} already in queue for ${key}`);
-        return;
-      }
+      if (alreadyInQueue) return;
 
       waitingPlayers[key].push(player);
 
@@ -67,9 +64,6 @@ module.exports = (io) => {
             const playerSocket = io.sockets.sockets.get(p.socketId);
             if (playerSocket) {
               playerSocket.join(roomId);
-              console.log(`📌 Joined user ${p.userId} to room ${roomId}`);
-            } else {
-              console.error(`⚠️ Socket ${p.socketId} not found for user ${p.userId}`);
             }
             io.to(p.socketId).emit("color_selection_start", {
               roomId,
@@ -83,6 +77,7 @@ module.exports = (io) => {
             });
           });
 
+          //update: Room state add kiya with positions + starting turn
           activeRooms[roomId] = {
             players: uniqueUsers.map(p => ({
               id: p.userId,
@@ -93,6 +88,12 @@ module.exports = (io) => {
               color: null,
             })),
             currentTurnIndex: 0,
+            positions: {
+              red: [0, 0, 0, 0],
+              green: [0, 0, 0, 0],
+              yellow: [0, 0, 0, 0],
+              blue: [0, 0, 0, 0],
+            },
           };
 
           waitingPlayers[key] = waitingPlayers[key].filter(
@@ -116,11 +117,10 @@ module.exports = (io) => {
                   roomId,
                   takenColors: Object.keys(colorMap),
                 });
-                console.log(`🤖 Auto-assigned color ${chosen} to user ${p.id} in room ${roomId}`);
               }
             });
 
-            // Emit match_found only if all players have colors
+            //update: Match found hone ke baad first turn emit
             if (activeRooms[roomId]?.players.every(p => p.color)) {
               activeRooms[roomId].players.forEach(p => {
                 io.to(p.socketId).emit("match_found", {
@@ -134,9 +134,9 @@ module.exports = (io) => {
                   })),
                 });
               });
-              console.log(`✅ Match found for room ${roomId}`);
-            } else {
-              console.log(`⚠️ Match found delayed for room ${roomId}: not all players have colors`);
+
+              const firstTurnPlayer = activeRooms[roomId].players[0];
+              io.to(roomId).emit("turn_changed", { playerId: firstTurnPlayer.id });
             }
           }, 5000);
         }
@@ -144,24 +144,11 @@ module.exports = (io) => {
     });
 
     socket.on("select_color", ({ roomId, userId, color }) => {
-      console.log(`🎨 Received select_color: userId=${userId}, color=${color}, roomId=${roomId}`);
-      if (!AVAILABLE_COLORS.includes(color)) {
-        io.to(socket.id).emit("color_error", { message: `Invalid color: ${color}` });
-        console.log(`❌ Invalid color ${color} for user ${userId}`);
-        return;
-      }
-      if (!roomColorMap[roomId]) {
-        io.to(socket.id).emit("color_error", { message: `Room ${roomId} not found` });
-        console.log(`❌ Room ${roomId} not found for user ${userId}`);
-        return;
-      }
+      if (!AVAILABLE_COLORS.includes(color)) return;
+      if (!roomColorMap[roomId]) return;
 
       const colorAlreadyTaken = Object.keys(roomColorMap[roomId]).includes(color);
-      if (colorAlreadyTaken) {
-        io.to(socket.id).emit("color_error", { message: `Color ${color} is already taken` });
-        console.log(`❌ Color ${color} already taken in room ${roomId}`);
-        return;
-      }
+      if (colorAlreadyTaken) return;
 
       roomColorMap[roomId][color] = userId;
 
@@ -177,10 +164,6 @@ module.exports = (io) => {
           roomId,
           takenColors: Object.keys(roomColorMap[roomId]),
         });
-        console.log(`✅ Color ${color} assigned to user ${userId} in room ${roomId}`);
-      } else {
-        io.to(socket.id).emit("color_error", { message: `Room ${roomId} not found` });
-        console.log(`❌ Room ${roomId} not found for user ${userId}`);
       }
     });
 
@@ -189,11 +172,12 @@ module.exports = (io) => {
       if (room) {
         socket.join(roomId);
         io.to(socket.id).emit("room_info", {
+          roomId,
           players: room.players,
           you: room.players.find(p => p.socketId === socket.id),
         });
       } else {
-        io.to(socket.id).emit("room_info", { players: [] });
+        io.to(socket.id).emit("room_info", { roomId, players: [], you: null});
       }
     });
 
@@ -215,19 +199,24 @@ module.exports = (io) => {
       });
     });
 
+    //update: Dice roll logic + turn validation
     socket.on("roll_dice", ({ roomId, playerId }) => {
+      const room = activeRooms[roomId];
+      if (!room) return;
+
+      const currentPlayer = room.players[room.currentTurnIndex];
+      if (currentPlayer.id !== playerId) {
+        io.to(socket.id).emit("error", { message: "Not your turn!" });
+        return;
+      }
+
       const diceValue = Math.floor(Math.random() * 6) + 1;
       io.to(roomId).emit("dice_rolled", { playerId, value: diceValue });
 
-      const room = activeRooms[roomId];
-      if (room && room.players?.length > 0) {
-        room.currentTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
-        const nextPlayer = room.players[room.currentTurnIndex];
-
-        io.to(roomId).emit("turn_changed", {
-          playerId: nextPlayer.id,
-        });
-      }
+      // turn change
+      room.currentTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
+      const nextPlayer = room.players[room.currentTurnIndex];
+      io.to(roomId).emit("turn_changed", { playerId: nextPlayer.id });
     });
 
     socket.on("disconnect", () => {

@@ -37,4 +37,5 @@ const Home = ({color, children}) => {
   )
 }
 
+
 export default Home

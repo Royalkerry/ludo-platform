@@ -50,7 +50,7 @@ app.use("/api/games", gameRoutes);
 app.use("/api/users", loginDetailRoutes);
 
 // ✅ DB & Server Start
-db.sequelize.sync({ alter: true }) // Or use { force: true } if starting clean
+db.sequelize.sync({ alter: false }) // Or use { force: true } if starting clean
   .then(() => {
     // db.seedInitialCreator(); // Seed creator admin if not exists
     const PORT = process.env.PORT || 5000;
