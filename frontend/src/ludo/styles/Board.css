@@ -160,7 +160,7 @@
 }
 
 .track.start::before, .track.stop::before{
-  content: '⚝';
+  content: '✯';
   position: absolute;
   top: 42%;
   left: 50%;

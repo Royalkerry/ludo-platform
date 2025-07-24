@@ -1,27 +1,51 @@
-// components/Dice.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import socket from "../../utils/socket";
 import { useGameContext } from "../context/GameContext";
+import rollSound from "../assests/roll.mp3";
+import "../styles/Dice.css";
 
-export default function Dice() {
-  const { myUserId } = useGameContext();
+const Dice = ({ isCurrentTurn, userId, value }) => {
+  const { roomId, myUserId } = useGameContext();
   const [rolling, setRolling] = useState(false);
 
-  const rollDice = () => {
-    if (rolling) return;
-    setRolling(true);
-    const value = Math.floor(Math.random() * 6) + 1;
+  const audio = new Audio(rollSound);
 
-    socket.emit("roll_dice", { userId: myUserId, value });
-    setTimeout(() => setRolling(false), 1000);
+  const handleRoll = () => {
+    if (!isCurrentTurn || myUserId !== userId) return;
+    audio.play();
+    setRolling(true);
+    socket.emit("roll_dice", { roomId, playerId: userId });
   };
 
+  useEffect(() => {
+    if (rolling) {
+      const t = setTimeout(() => {
+        setRolling(false);
+        audio.pause();
+        audio.currentTime = 0;
+      }, 1000); // 1 second animation
+      return () => clearTimeout(t);
+    }
+  }, [rolling]);
+
   return (
-    <button
-      onClick={rollDice}
-      className="mt-2 bg-blue-500 text-white px-3 py-1 rounded shadow hover:bg-blue-600 text-sm"
-    >
-      🎲 Roll
-    </button>
+    <div id="dice" onClick={handleRoll}>
+      <div className={`dice ${rolling ? "rotate" : ""}`}>
+        <div className={`inner-face face${value || 0}`}>
+          {value === 0 ? (
+            <span className="dice-initial-face">
+              {isCurrentTurn ? "ROLL" : "⏳"}
+            </span>
+          ) : (
+            Array.from({ length: value }).map((_, i) => (
+              <span key={i} className="dot" />
+            ))
+          )}
+        </div>
+      </div>
+    </div>
   );
-}
+};
+
+export default Dice;
+// 2d mai working code , 
