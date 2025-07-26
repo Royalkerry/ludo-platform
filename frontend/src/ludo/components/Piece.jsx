@@ -1,14 +1,32 @@
-import React from 'react'
-import Move from '../utilities/Move'
-import { useGameContext } from '../context/GameContext'
-import '../styles/Piece.css'
+import React from 'react';
+import { useGameContext } from '../context/GameContext';
+import socket from '../../utils/socket';
+import '../styles/Piece.css';
 
-const Piece = ({color, id}) => {
+const Piece = ({ color, id }) => {
+  const { roomId, currentTurnId, myUserId, diceValues, users } = useGameContext();
 
-  const { currentPlayer, diceNumberValue, playerPositions, setDiceDisabled, setPlayerPositions, nextTurn, win, setWin } = useGameContext();
+  const make_a_move = () => {
+    const [pieceColor, indexStr] = id.split('-');
+    const index = parseInt(indexStr, 10);
+
+    // Whose turn है check करो
+    const currentPlayer = users.find((u) => u.id === currentTurnId);
+    if (!currentPlayer || currentPlayer.id !== myUserId) return;
+
+    const diceValue = diceValues[currentTurnId];
+    if (!diceValue) return; // अभी dice नहीं फेंका गया
+
+    socket.emit('piece_moved', {
+      roomId,
+      color: pieceColor,
+      pawnIndex: index,
+      steps: diceValue,
+    });
+  };
 
   function colorGenerator(color) {
-    switch(color) {
+    switch (color) {
       case 'red':
         return '#FF0800';
       case 'blue':
@@ -22,15 +40,16 @@ const Piece = ({color, id}) => {
     }
   }
 
-  const make_a_move = (e) => {
-    Move(e, { currentPlayer, playerPositions, diceNumberValue, setDiceDisabled, setPlayerPositions, nextTurn, win, setWin});
-  }
-
   return (
-    <div id={id}className="piece" style={{backgroundColor: colorGenerator(color)}} onClick={make_a_move}>
-        <div className="piece-inner"></div>
+    <div
+      id={id}
+      className="piece"
+      style={{ backgroundColor: colorGenerator(color) }}
+      onClick={make_a_move}
+    >
+      <div className="piece-inner"></div>
     </div>
-  )
-}
+  );
+};
 
-export default Piece
+export default Piece;

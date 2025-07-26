@@ -1,7 +1,5 @@
-// src/pages/RefillRequest.jsx
 import React, { useState } from "react";
 import axios from "@/utils/axiosInstance";
-import Sidebar from "../user/layout/Sidebar";
 
 export default function RefillRequest() {
   const [amount, setAmount] = useState("");
@@ -13,7 +11,7 @@ export default function RefillRequest() {
     setMessage("");
 
     try {
-      const res = await axios.post("/user/request-refill", { amount, note });
+      await axios.post("/user/request-refill", { amount, note });
       setMessage("✅ Refill request submitted successfully!");
       setAmount("");
       setNote("");
@@ -22,9 +20,8 @@ export default function RefillRequest() {
     }
   };
 
-  return (<div style={{ display: "flex", height: "100vh" }}>
-    <Sidebar /> {/* ✅ Sidebar reused */}
-    <div style={{ flex: 1, padding: "40px" }}>
+  return (
+    <div className="p-10 bg-white text-black rounded shadow-md w-full">
       <h2 className="text-xl font-bold mb-4">💸 Refill Points</h2>
 
       {message && <p className="mb-2">{message}</p>}
@@ -36,7 +33,7 @@ export default function RefillRequest() {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           required
-          className="p-2 rounded text-black"
+          className="p-2 rounded text-black border border-gray-300"
         />
 
         <textarea
@@ -44,14 +41,16 @@ export default function RefillRequest() {
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={3}
-          className="p-2 rounded text-black"
+          className="p-2 rounded text-black border border-gray-300"
         />
 
-        <button type="submit" className="bg-green-600 text-white py-2 rounded">
+        <button
+          type="submit"
+          className="bg-green-600 text-white py-2 rounded hover:bg-green-700"
+        >
           Submit Refill Request
         </button>
       </form>
     </div>
-  </div>
-);
+  );
 }

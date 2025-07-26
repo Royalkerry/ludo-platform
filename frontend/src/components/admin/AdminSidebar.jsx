@@ -1,35 +1,35 @@
 // src/components/admin/AdminSidebar.jsx
 import { useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import axios from "@/utils/axiosInstance";
+import axios from "@/utils/axiosInstance"; 
 
 export default function AdminSidebar({ onSelect, isOpen, onClose }) {
-  const user = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("adminToken");
   const navigate = useNavigate();
 
-  const [points, setPoints] = useState(null);
+  const [profile, setProfile] = useState(null);
 
-  const fetchPoints = async () => {
+  const fetchProfile = async () => {
     try {
       const res = await axios.get("/admin/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setPoints(res.data.points);
+      // assuming API returns { username, role, points }
+      setProfile(res.data);
     } catch (err) {
-      console.error("❌ Failed to fetch point balance", err);
+      console.error("❌ Failed to fetch profile", err);
     }
   };
-
-  useEffect(() => {
-    if (token) fetchPoints();
-  }, [token]);
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
     localStorage.removeItem("user");
     navigate("/admin-login");
   };
+
+  useEffect(() => {
+    if (token) fetchProfile();
+  }, [token]);
 
   return (
     <>
@@ -47,16 +47,16 @@ export default function AdminSidebar({ onSelect, isOpen, onClose }) {
           ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 md:static md:h-screen`}
       >
         <div className="mb-6">
-          <h2 className="text-xl font-bold mb-1">👤 {user?.username}</h2>
-          <h3 className="text-sm text-yellow-400 capitalize">{user?.role}</h3>
-          {points !== null && (
+          <h2 className="text-xl font-bold mb-1">👤 {profile?.username || "Loading..."}</h2>
+          <h3 className="text-sm text-yellow-400 capitalize">{profile?.role}</h3>
+          {profile?.points !== undefined && (
             <p className="text-green-400 mt-2 text-sm">
-              💎 Points: <strong>{points}</strong>
+              💎 Points: <strong>{profile.points}</strong>
             </p>
           )}
         </div>
 
-        {user?.role === "creator" && (
+        {profile?.role === "creator" && (
           <button
             onClick={async () => {
               const amt = parseInt(prompt("Enter amount to generate:"), 10);
@@ -68,7 +68,7 @@ export default function AdminSidebar({ onSelect, isOpen, onClose }) {
                   { headers: { Authorization: `Bearer ${token}` } }
                 );
                 alert(res.data.message);
-                setPoints(res.data.points);
+                setProfile((prev) => ({ ...prev, points: res.data.points }));
               } catch (err) {
                 alert("❌ Failed to generate points");
               }
@@ -90,7 +90,7 @@ export default function AdminSidebar({ onSelect, isOpen, onClose }) {
             👥 Users
           </li>
 
-          {user?.role === "master" && (
+          {profile?.role === "master" && (
             <>
               <li
                 className="cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"

@@ -41,7 +41,7 @@ export default function RefillRequests() {
   };
 
   return (
-    <div className="w-full p-4">
+    <div className="w-full p-4 text-black">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">💰 Refill Requests</h2>
 
       {loading ? (
@@ -62,7 +62,7 @@ export default function RefillRequests() {
             <tbody>
               {requests.map((r) => (
                 <tr key={r.id} className="hover:bg-gray-50 text-sm">
-                  <td className="border px-4 py-2">{r.user?.username}</td>
+                  <td className="border px-4 py-2">{r.User?.username}</td>
                   <td className="border px-4 py-2 text-green-700 font-semibold">{r.amount}</td>
                   <td className="border px-4 py-2 text-gray-600">{r.note || "-"}</td>
                   <td className="border px-4 py-2 flex flex-wrap gap-2">

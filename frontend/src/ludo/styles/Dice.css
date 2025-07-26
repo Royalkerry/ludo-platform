@@ -1,91 +1,81 @@
-#dice {
-  width: 60px;
-  height: 60px;
-  margin: 10px;
-  perspective: 1000px;
+:root {
+  --dice-size: 60px;
+  --dot-size: calc(var(--dice-size) / 6); /* ~10px for 60px dice */
+}
+
+.dice-container {
+  width: var(--dice-size);
+  height: var(--dice-size);
+  perspective: 400px;
   cursor: pointer;
 }
 
-.dice {
-  width: 50px;
-  height: 50px;
+.dice3d {
+  width: var(--dice-size);
+  height: var(--dice-size);
   position: relative;
   transform-style: preserve-3d;
-  background: #8a0000;   /* ← Dice का BG Color */
-  border-radius: 20%;
-  display: grid;
-  place-items: center;
-  box-shadow: 0 0 8px rgba(0,0,0,0.5);
-}
-.dice.rotate {
-  animation: rotate 1s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.inner-face {
-  display: grid;
-  width: 40px;
-  height: 40px;
-  padding: 5px;
+  transition: transform 0.6s cubic-bezier(0.4, 2.2, 0.2, 1);
+
+  box-shadow: inset -3px -3px 8px rgba(0, 0, 0, 0.2), 
+              inset 3px 3px 8px rgba(255, 255, 255, 0.4),
+              0 4px 8px rgba(0, 0, 0, 0.3);
+  border-radius: calc(var(--dice-size) / 8); 
 }
 
-/* ROLL Text */
-.dice-initial-face {
+.face {
+  position: absolute;
+  width: var(--dice-size);
+  height: var(--dice-size);
+  border-radius: calc(var(--dice-size) / 8);
+  background: linear-gradient(145deg, #ffffff, #e6e6e6); /* glossy gradient */
+  border: 1px solid #ccc;
   display: flex;
-  font-size: x-small;
-  font-weight: bold;
-  color: white;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Dots */
 .dot {
-  width: 8px;
-  height: 8px;
-  background-color: #fff;
+  position: absolute;
+  width: var(--dot-size);
+  height: var(--dot-size);
+  background: black;
   border-radius: 50%;
-  margin: auto;
-  box-shadow: 0 0 5px #000;
 }
 
-/* Dice Faces Positions */
-.face.front   { transform: translateZ(30px); }
-.face.back    { transform: rotateY(180deg) translateZ(30px); }
-.face.right   { transform: rotateY(90deg) translateZ(30px); }
-.face.left    { transform: rotateY(-90deg) translateZ(30px); }
-.face.top     { transform: rotateX(90deg) translateZ(30px); }
-.face.bottom  { transform: rotateX(-90deg) translateZ(30px); }
+/* Dot positions (percentage based) */
+.face1 .dot.center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
 
-/* Dot Layout */
-.face1 .dot:nth-child(1) { grid-row: 2; grid-column: 2; }
+.face2 .dot.top-left { top: 25%; left: 25%; transform: translate(-50%, -50%); }
+.face2 .dot.bottom-right { top: 75%; left: 75%; transform: translate(-50%, -50%); }
 
-.face2 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
-.face2 .dot:nth-child(2) { grid-row: 3; grid-column: 3; }
+.face3 .dot.top-left { top: 25%; left: 25%; transform: translate(-50%, -50%); }
+.face3 .dot.center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.face3 .dot.bottom-right { top: 75%; left: 75%; transform: translate(-50%, -50%); }
 
-.face3 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
-.face3 .dot:nth-child(2) { grid-row: 2; grid-column: 2; }
-.face3 .dot:nth-child(3) { grid-row: 3; grid-column: 3; }
+.face4 .dot.top-left { top: 25%; left: 25%; transform: translate(-50%, -50%); }
+.face4 .dot.top-right { top: 25%; left: 75%; transform: translate(-50%, -50%); }
+.face4 .dot.bottom-left { top: 75%; left: 25%; transform: translate(-50%, -50%); }
+.face4 .dot.bottom-right { top: 75%; left: 75%; transform: translate(-50%, -50%); }
 
-.face4 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
-.face4 .dot:nth-child(2) { grid-row: 1; grid-column: 3; }
-.face4 .dot:nth-child(3) { grid-row: 3; grid-column: 1; }
-.face4 .dot:nth-child(4) { grid-row: 3; grid-column: 3; }
+.face5 .dot.center { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.face5 .dot.top-left { top: 25%; left: 25%; transform: translate(-50%, -50%); }
+.face5 .dot.top-right { top: 25%; left: 75%; transform: translate(-50%, -50%); }
+.face5 .dot.bottom-left { top: 75%; left: 25%; transform: translate(-50%, -50%); }
+.face5 .dot.bottom-right { top: 75%; left: 75%; transform: translate(-50%, -50%); }
 
-.face5 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
-.face5 .dot:nth-child(2) { grid-row: 1; grid-column: 3; }
-.face5 .dot:nth-child(3) { grid-row: 2; grid-column: 2; }
-.face5 .dot:nth-child(4) { grid-row: 3; grid-column: 1; }
-.face5 .dot:nth-child(5) { grid-row: 3; grid-column: 3; }
+.face6 .dot.top-left { top: 25%; left: 25%; transform: translate(-50%, -50%); }
+.face6 .dot.mid-left { top: 50%; left: 25%; transform: translate(-50%, -50%); }
+.face6 .dot.bottom-left { top: 75%; left: 25%; transform: translate(-50%, -50%); }
+.face6 .dot.top-right { top: 25%; left: 75%; transform: translate(-50%, -50%); }
+.face6 .dot.mid-right { top: 50%; left: 75%; transform: translate(-50%, -50%); }
+.face6 .dot.bottom-right { top: 75%; left: 75%; transform: translate(-50%, -50%); }
 
-.face6 .dot:nth-child(1) { grid-row: 1; grid-column: 1; }
-.face6 .dot:nth-child(2) { grid-row: 2; grid-column: 1; }
-.face6 .dot:nth-child(3) { grid-row: 3; grid-column: 1; }
-.face6 .dot:nth-child(4) { grid-row: 1; grid-column: 3; }
-.face6 .dot:nth-child(5) { grid-row: 2; grid-column: 3; }
-.face6 .dot:nth-child(6) { grid-row: 3; grid-column: 3; }
-
-
-@keyframes rotate {
-  0%   { transform: rotateX(0deg) rotateY(0deg); }
-  100% { transform: rotateX(720deg) rotateY(720deg); }
-}
-/* // 2d mai working code  animation akela sudharna hai  */
+/* 3D faces (translateZ = half size) */
+.face1 { transform: rotateY(0deg) translateZ(calc(var(--dice-size) / 2)); }
+.face2 { transform: rotateY(90deg) translateZ(calc(var(--dice-size) / 2)); }
+.face3 { transform: rotateY(180deg) translateZ(calc(var(--dice-size) / 2)); }
+.face4 { transform: rotateY(-90deg) translateZ(calc(var(--dice-size) / 2)); }
+.face5 { transform: rotateX(90deg) translateZ(calc(var(--dice-size) / 2)); }
+.face6 { transform: rotateX(-90deg) translateZ(calc(var(--dice-size) / 2)); }

@@ -87,6 +87,8 @@
 .track-404{grid-area: b4;}
 .track-405{grid-area: b5;}
 
+
+
 /*win-win*/
 #win-win{grid-area: ww;}
 
@@ -94,27 +96,27 @@
   display: grid;
   width: fit-content;
   height: max-content;
-  background: white;
+  background: w;
   border-radius: 5%;
   box-shadow: 0 0 10px #fff;
   padding: 10px;
   transform: scale(0.8);
   grid-template-areas: 
-  'rh rh rh rh rh rh t24 t25 t26 gh gh gh gh gh gh'
-  'rh rh rh rh rh rh t23 g1 t27 gh gh gh gh gh gh'
-  'rh rh rh rh rh rh t22 g2 t28 gh gh gh gh gh gh'
-  'rh rh rh rh rh rh t21 g3 t29 gh gh gh gh gh gh'
-  'rh rh rh rh rh rh t20 g4 t30 gh gh gh gh gh gh'
-  'rh rh rh rh rh rh t19 g5 t31 gh gh gh gh gh gh'
+  'yh yh yh yh yh yh t24 t25 t26 gh gh gh gh gh gh'
+  'yh yh yh yh yh yh t23 g1 t27 gh gh gh gh gh gh'
+  'yh yh yh yh yh yh t22 g2 t28 gh gh gh gh gh gh'
+  'yh yh yh yh yh yh t21 g3 t29 gh gh gh gh gh gh'
+  'yh yh yh yh yh yh t20 g4 t30 gh gh gh gh gh gh'
+  'yh yh yh yh yh yh t19 g5 t31 gh gh gh gh gh gh'
   't13 t14 t15 t16 t17 t18 ww ww ww t32 t33 t34 t35 t36 t37'
-  't12 r1 r2 r3 r4 r5 ww ww ww y5 y4 y3 y2 y1 t38'
+  't12 y1 y2 y3 y4 y5 ww ww ww b5 b4 b3 b2 b1 t38'
   't11 t10 t9 t8 t7 t6 ww ww ww t44 t43 t42 t41 t40 t39'
-  'bh bh bh bh bh bh t5 b5 t45 yh yh yh yh yh yh'
-  'bh bh bh bh bh bh t4 b4 t46 yh yh yh yh yh yh'
-  'bh bh bh bh bh bh t3 b3 t47 yh yh yh yh yh yh'
-  'bh bh bh bh bh bh t2 b2 t48 yh yh yh yh yh yh'
-  'bh bh bh bh bh bh t1 b1 t49 yh yh yh yh yh yh'
-  'bh bh bh bh bh bh t52 t51 t50 yh yh yh yh yh yh';
+  'rh rh rh rh rh rh t5 r5 t45 bh bh bh bh bh bh'
+  'rh rh rh rh rh rh t4 r4 t46 bh bh bh bh bh bh'
+  'rh rh rh rh rh rh t3 r3 t47 bh bh bh bh bh bh'
+  'rh rh rh rh rh rh t2 r2 t48 bh bh bh bh bh bh'
+  'rh rh rh rh rh rh t1 r1 t49 bh bh bh bh bh bh'
+  'rh rh rh rh rh rh t52 t51 t50 bh bh bh bh bh bh';
 }
 
 .track{
@@ -145,21 +147,18 @@
   background-color: #0c15be;
 } 
 
+.track.safe{
+  background-color: lightsteelblue;
+  opacity: 0.8;
+}
+
 .track.start{
   color: white;
   position: relative;
   font-size: 2.5rem;
 }
 
-.track.stop{
-  color: gray;
-  opacity: 0.5;
-  position: relative;
-  font-size: 2.5rem;
-  background-color: lightsteelblue;
-}
-
-.track.start::before, .track.stop::before{
+.track.start::before {
   content: '✯';
   position: absolute;
   top: 42%;
@@ -170,6 +169,23 @@
 .track.multiple-pieces > div {
   zoom: 0.5;
 }
+
+
+
+
+
+.winner-popup {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  font-size: 2rem;
+}
+
 
 @media only screen and (max-width: 768px) {
   #board {

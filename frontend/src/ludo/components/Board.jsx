@@ -7,8 +7,9 @@ import { useGameContext } from "../context/GameContext";
 import "../styles/Board.css";
 
 const Board = () => {
-  const { playerPositions, users, currentTurnId } = useGameContext();
+  const { playerPositions, users, currentTurnId, winner} = useGameContext();
   const [layout, setLayout] = useState(trackLayout);
+  const HOME_ORDER = ["yellow", "green", "red", "blue"];
 
   // Current player color
   const currentPlayer = users.find((u) => u.id === currentTurnId);
@@ -19,7 +20,9 @@ const Board = () => {
     Object.values(updatedLayout).forEach((cell) => (cell.Piece = []));
     Object.entries(playerPositions).forEach(([color, positions]) => {
       positions.forEach((pos, index) => {
-        if (![0, 106, 206, 306, 406].includes(pos)) {
+        if (pos === 999) {
+          updatedLayout["ww"]?.Piece.push(`${color}-${index}`);
+        } else if (pos !== 0) {
           updatedLayout[pos]?.Piece.push(`${color}-${index}`);
         }
       });
@@ -30,7 +33,7 @@ const Board = () => {
   return (
     <div id="board" className="relative mx-auto">
       {/* Homes with glow for current turn */}
-      {["red", "green", "yellow", "blue"].map((color) => (
+      {HOME_ORDER.map((color) => (
         <Home
           key={color}
           color={color}
@@ -58,6 +61,12 @@ const Board = () => {
           </div>
         );
       })}
+      {/* Center Win Zone */}
+      {winner && (
+  <div className="winner-popup">
+    🎉 {winner.toUpperCase()} wins the game! 🎉
+  </div>
+)}
     </div>
     
   );

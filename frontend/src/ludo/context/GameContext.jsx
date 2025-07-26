@@ -7,8 +7,11 @@ export const useGameContext = () => useContext(GameContext);
 
 export const GameProvider = ({ children }) => {
   const [roomId, setRoomId] = useState(null);
-  const [diceValues, setDiceValues] = useState(0);
-  const [users, setUsers] = useState([]); // array of { id, name, avatar, color, points }
+  const [diceValues, setDiceValues] = useState({});
+  const [dice, setDice] = useState({value:1, rollId:0});
+  const [diceDisabled, setDiceDisabled] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [winner, setWinner] = useState(null);
   const [playerPositions, setPlayerPositions] = useState({
     red: [0, 0, 0, 0],
     blue: [0, 0, 0, 0],
@@ -18,11 +21,37 @@ export const GameProvider = ({ children }) => {
   const [currentTurnId, setCurrentTurnId] = useState(null);
   const [myUserId, setMyUserId] = useState(null);
 
+  const startingCells = {
+    red: 1,
+    yellow: 14,
+    green: 27,
+    blue: 40,
+  };
+
+  const homeEntry = {
+    red: 52,
+    yellow: 13,
+    green: 26,
+    blue: 39,
+  };
+
+  const homeTracks = {
+    red: [101, 102, 103, 104, 105],
+    yellow: [201, 202, 203, 204, 205],
+    green: [301, 302, 303, 304, 305],
+    blue: [401, 402, 403, 404, 405],
+  };
+
+  // ===== Pawn Move Logic =====
+  const movePawn = (color, pawnIndex, steps) => {
+    if (roomId && myUserId) {
+      socket.emit("piece_moved", { roomId, color, pawnIndex, steps });
+    }
+  };
+
   // ==== Socket Listeners ====
   useEffect(() => {
-    socket.on("your_id", (userId) => {
-      setMyUserId(userId);
-    });
+    socket.on("your_id", (userId) => setMyUserId(userId));
 
     socket.on("room_info", ({ roomId, players, you }) => {
       if (roomId) setRoomId(roomId);
@@ -30,45 +59,33 @@ export const GameProvider = ({ children }) => {
       setMyUserId(you?.id);
     });
 
-    socket.on("position_update", (positions) => {
-      setPlayerPositions(positions);
+    socket.on("position_update", (positions) => setPlayerPositions(positions));
+
+    socket.on("turn_update", ({ playerId }) => setCurrentTurnId(playerId));
+    socket.on("turn_changed", ({ playerId }) => setCurrentTurnId(playerId));
+
+    socket.on("dice_rolled", ({ playerId, value, rollId }) => {
+      setDiceValues((prev) => ({ ...prev, [playerId]: {value, rollId} }));
     });
 
-    socket.on("turn_update", ({ playerId }) => {
-      console.log("Turn update:", playerId);
-      setCurrentTurnId(playerId);
-    });
-
-    socket.on("turn_changed", ({ playerId }) => {
-      console.log("Turn changed (match start):", playerId);
-      setCurrentTurnId(playerId);
-    });
-
-    socket.on("dice_rolled", ({ playerId, value }) => {
-      console.log(`Dice rolled by ${playerId}: ${value}`);
-      setDiceValues((prev) => ({...prev, [playerId]: value}));
-    });
-
-    // ==== Matchmaking events ====
     socket.on("color_selection_start", ({ roomId, availableColors, players }) => {
-      console.log("Color selection phase started:", players);
       setRoomId(roomId);
       setUsers(players);
-      // TODO: handle color selection UI using availableColors
     });
 
     socket.on("color_update", ({ userId, color }) => {
-      console.log(`Color chosen: ${userId} -> ${color}`);
-      setUsers((prev) =>
-        prev.map((p) => (p.id === userId ? { ...p, color } : p))
-      );
+      setUsers((prev) => prev.map((p) => (p.id === userId ? { ...p, color } : p)));
     });
 
     socket.on("match_found", ({ roomId, players }) => {
-      console.log("Match found:", roomId, players);
       setRoomId(roomId);
       setUsers(players);
     });
+    socket.on("game_over", ({ winner, positions }) => {
+      setWinner(winner);
+      setPlayerPositions(positions);
+    });
+
 
     return () => {
       socket.off("your_id");
@@ -80,11 +97,10 @@ export const GameProvider = ({ children }) => {
       socket.off("color_selection_start");
       socket.off("color_update");
       socket.off("match_found");
-      
+      socket.off("game_over");
     };
   }, []);
 
-  // ==== API methods for components ====
   const selectColor = (color) => {
     if (roomId && myUserId) {
       socket.emit("select_color", { roomId, userId: myUserId, color });
@@ -97,12 +113,14 @@ export const GameProvider = ({ children }) => {
     }
   };
 
-  // Jab roomId change hota hai tab server se fresh info lo
   useEffect(() => {
     if (roomId) {
       socket.emit("get_room_info", { roomId });
     }
   }, [roomId]);
+
+  const currentPlayer = users.find((u) => u.id === currentTurnId);
+  const currentColor = currentPlayer?.color || null;
 
   return (
     <GameContext.Provider
@@ -121,10 +139,18 @@ export const GameProvider = ({ children }) => {
         setDiceValues,
         selectColor,
         rollDice,
-        
+        diceDisabled,
+        setDiceDisabled,
+        movePawn,
+        dice,
+        setDice,
+        winner,
+        setWinner,
+        currentColor,
       }}
     >
       {children}
     </GameContext.Provider>
   );
 };
+// nahi chala to undu kr do ye msg read hone tak 

@@ -2,15 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "@/utils/axiosInstance";
 
-const LobbySidebar = () => {
+const Sidebar = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
 
-  // Fetch user info from backend using stored token
   useEffect(() => {
     const token = localStorage.getItem("userToken");
     if (!token) {
-      navigate("/"); // Redirect to login if token is missing
+      navigate("/"); 
       return;
     }
 
@@ -20,7 +19,7 @@ const LobbySidebar = () => {
       .catch((err) => {
         console.error("Failed to fetch user info", err);
         localStorage.clear();
-        navigate("/"); // Logout on error
+        navigate("/");
       });
   }, [navigate]);
 
@@ -44,7 +43,8 @@ const LobbySidebar = () => {
   ];
 
   return (
-    <aside className="hidden md:flex flex-col w-64 h-screen bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white p-6 fixed top-0 left-0 z-50 shadow-lg">
+    <aside className="hidden md:flex fixed top-0 left-0 w-64 h-screen 
+  flex-col bg-gradient-to-b from-[#0f172a] to-[#1e293b] text-white p-6 shadow-lg">
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-1">👋 Welcome</h2>
         <h3 className="text-lg font-bold text-yellow-300">{user?.username}</h3>
@@ -55,7 +55,8 @@ const LobbySidebar = () => {
         {menuItems.map((item, idx) => (
           <li
             key={idx}
-            className="flex items-center gap-3 px-4 py-2 rounded-md hover:bg-[#334155] cursor-pointer transition"
+            className="flex items-center gap-3 px-4 py-2 rounded-md 
+              hover:bg-[#334155] cursor-pointer transition"
             onClick={() => (item.path ? navigate(item.path) : item.action())}
           >
             <span className="text-lg">{item.icon}</span>
@@ -67,4 +68,4 @@ const LobbySidebar = () => {
   );
 };
 
-export default LobbySidebar;
+export default Sidebar;

@@ -3,21 +3,20 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGameContext, GameProvider } from "../../ludo/context/GameContext";
 import Board from "../../ludo/components/Board";
 import DicePanel from "../../ludo/components/DicePanel";
-import TopBar from "../user/layout/TopBar";
 import socket from "../../utils/socket";
 
 const corners = [
-  { pos: "top-left", token: "red" },
+  { pos: "top-left", token: "yellow" },
   { pos: "top-right", token: "green" },
-  { pos: "bottom-left", token: "blue" },
-  { pos: "bottom-right", token: "yellow" },
+  { pos: "bottom-left", token: "red" },
+  { pos: "bottom-right", token: "blue" },
 ];
 
 const dicePanelPositions = {
-  "top-left": "absolute top-25 left-4 md:top-20 md:left-70",
-  "top-right": "absolute top-25 right-4 md:top-20 md:right-70",
-  "bottom-left": "absolute bottom-25 left-4 md:bottom-20 md:left-70",
-  "bottom-right": "absolute bottom-25 right-4 md:bottom-20 md:right-70",
+  "top-left": "absolute top-20 left-0 md:top-20 md:left-20",
+  "top-right": "absolute top-20 right-0 md:top-20 md:right-20",
+  "bottom-left": "absolute bottom-20 left-0 md:bottom-20 md:left-20",
+  "bottom-right": "absolute bottom-20 right-0 md:bottom-20 md:right-20",
 };
 
 const PlayContent = () => {
@@ -62,19 +61,18 @@ const PlayContent = () => {
   }, [paramRoomId, navigate, setRoomId, setUsers, setMyUserId, setCurrentTurnId]);
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center w-full h-screen bg-white">
-      <div className="fixed top-0 w-full z-10">
-        <TopBar />
-      </div>
-
-      <div className="absolute inset-0 flex items-center justify-center">
+    <div className="relative w-full h-full flex flex-col items-center justify-center">
+      <div className="relative w-full h-full flex items-center justify-center">
         <Board />
         {corners.map(({ pos, token }) => {
           const player = users.find((u) => u.color === token);
           if (!player) return null;
           return (
             <div key={token} className={dicePanelPositions[pos]}>
-              <DicePanel user={player} isCurrentTurn={currentTurnId === player.id} />
+              <DicePanel
+                user={player}
+                isCurrentTurn={currentTurnId === player.id}
+              />
             </div>
           );
         })}

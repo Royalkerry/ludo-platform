@@ -1,7 +1,6 @@
 // src/Root.jsx
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import App from "./App";
 import Lobby from "../src/components/user/Lobby";
 import AdminDashboard from "../src/components/admin/AdminDashboard"; 
 import AdminLogin from "./pages/AdminLogin"; // ✅

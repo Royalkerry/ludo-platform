@@ -4,7 +4,8 @@ import { useGameContext } from '../context/GameContext';
 
 const Home = ({color, children}) => {
 
-  const { currentPlayer } = useGameContext();
+  const { currentColor } = useGameContext();
+  const isActive = currentColor === color;
 
   function colorGenerator(color) {
     switch(color) {
@@ -30,7 +31,7 @@ const Home = ({color, children}) => {
   
   return (
     <div id={color+'-home'} className='home' style={{backgroundColor: colorGenerator(color)}}>
-      <div className={chanceColor(currentPlayer, color)}>
+      <div className={`home-inner ${isActive ? `${color}-chance` : ""}`}>
         {children}
       </div>
     </div>

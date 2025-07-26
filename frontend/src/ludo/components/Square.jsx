@@ -8,19 +8,19 @@ const Square = () => {
   const { playerPositions } = useGameContext();
 
   const redWinner = playerPositions['red'].map((position, index) => {
-    return position === 106 ? <Piece key={index} id={`red-${index}`} color={'red'} /> : null;
+    return position === 999 ? <Piece key={index} id={`red-${index}`} color={'red'} /> : null;
   });
 
   const yellowWinner = playerPositions['yellow'].map((position, index) => {
-    return position === 206 ? <Piece key={index} id={`yellow-${index}`} color={'yellow'} /> : null;
+    return position === 999 ? <Piece key={index} id={`yellow-${index}`} color={'yellow'} /> : null;
   });
 
   const greenWinner = playerPositions['green'].map((position, index) => {
-    return position === 306 ? <Piece key={index} id={`green-${index}`} color={'green'} /> : null;
+    return position === 999 ? <Piece key={index} id={`green-${index}`} color={'green'} /> : null;
   });
 
   const blueWinner = playerPositions['blue'].map((position, index) => {
-    return position === 406 ? <Piece key={index} id={`blue-${index}`} color={'blue'} /> : null;
+    return position === 999 ? <Piece key={index} id={`blue-${index}`} color={'blue'} /> : null;
   });
 
   return (

@@ -41,7 +41,7 @@ export default function WithdrawalRequests() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full text-black">
       <h2 className="text-2xl font-semibold text-gray-800 mb-6">🧾 Withdrawal Requests</h2>
 
       {loading ? (
@@ -62,7 +62,7 @@ export default function WithdrawalRequests() {
             <tbody className="divide-y divide-gray-200">
               {requests.map((r) => (
                 <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3">{r.user?.username}</td>
+                  <td className="px-4 py-3">{r.User?.username}</td>
                   <td className="px-4 py-3 text-green-600 font-semibold">₹{r.amount}</td>
                   <td className="px-4 py-3">{r.note || "-"}</td>
                   <td className="px-4 py-3 space-x-2">
