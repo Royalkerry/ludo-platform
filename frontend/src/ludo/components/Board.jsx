@@ -18,7 +18,7 @@ const Board = () => {
   useEffect(() => {
     const updatedLayout = { ...trackLayout };
     Object.values(updatedLayout).forEach((cell) => (cell.Piece = []));
-    Object.entries(playerPositions).forEach(([color, positions]) => {
+    Object.entries(playerPositions).forEach(([color, positions = []]) => {
       positions.forEach((pos, index) => {
         if (pos === 999) {
           updatedLayout["ww"]?.Piece.push(`${color}-${index}`);
@@ -64,7 +64,7 @@ const Board = () => {
       {/* Center Win Zone */}
       {winner && (
   <div className="winner-popup">
-    🎉 {winner.toUpperCase()} wins the game! 🎉
+    🎉 {winner?.name?.toUpperCase()} wins the game! 🎉
   </div>
 )}
     </div>

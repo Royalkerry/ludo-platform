@@ -1,11 +1,96 @@
 const { v4: uuidv4 } = require("uuid");
 const db = require("../models");
-//nxnjnnsk
+///jdhjjfhjk
 const waitingPlayers = {}; // { "2_100": [players], ... }
 const activeRooms = {};
 const roomColorMap = {}; // { roomCode: { red: userId, blue: userId, ... } }
 const AVAILABLE_COLORS = ["red", "green", "yellow", "blue"];
-const ruleEngine = require("../rules/ruleEngine");  // plceholder
+const ruleEngine = require("../rules/ruleEngine");  
+// const { startTurnTimer, handleSkip, autoMoveIfSinglePawn } = 
+//     require("../rules/timerEngine")(io, activeRooms, ruleEngine);
+
+
+// ===================== TURN TIMER HELPERS =====================
+// yaha naya code add kiya
+function startTurnTimer(io, roomId) {
+  const room = activeRooms[roomId];
+  if (!room) return;
+
+  clearTimeout(room.turnTimer);
+  clearInterval(room.turnCountdown);
+
+  const currentPlayer = room.players[room.currentTurnIndex];
+  if (!currentPlayer) return;
+
+  let remaining = 30;
+
+  io.to(roomId).emit("turn_timer", { playerId: currentPlayer.id, remaining });
+
+  room.turnCountdown = setInterval(() => {
+    remaining -= 1;
+    io.to(roomId).emit("turn_timer", { playerId: currentPlayer.id, remaining });
+
+    if (remaining <= 0) {
+      clearInterval(room.turnCountdown);
+    }
+  }, 1000);
+
+  room.turnTimer = setTimeout(() => {
+    clearInterval(room.turnCountdown);
+    handleSkip(io, roomId, currentPlayer.id);
+  }, 30000);
+
+  console.log(`⏳ Timer started for ${currentPlayer.name} in ${roomId}`);
+}
+
+//============ handle skip =============//
+function handleSkip(io, roomId, playerId) {
+  const room = activeRooms[roomId];
+  if (!room) return;
+
+  clearTimeout(room.turnTimer);
+  clearInterval(room.turnCountdown);
+
+  room.skipCount[playerId] = (room.skipCount[playerId] || 0) + 1;
+
+  io.to(roomId).emit("player_skipped", {
+    playerId,
+    skipCount: room.skipCount[playerId]
+  });
+
+  if (room.skipCount[playerId] >= 3) {
+    // ==== Remove player pawns from board ====
+    const kickedPlayer = room.players.find(p => p.id === playerId);
+    if (kickedPlayer?.color) {
+      room.positions[kickedPlayer.color] = [0, 0, 0, 0];
+    }
+
+    // ==== Remove player from players list ====
+    room.players = room.players.filter(p => p.id !== playerId);
+
+    io.to(roomId).emit("position_update", room.positions);
+    io.to(roomId).emit("player_kicked", { playerId });
+    console.log(`🚫 Player ${playerId} kicked from ${roomId}`);
+
+    // ==== Check for winner ====
+    if (room.players.length === 1) {
+      io.to(roomId).emit("game_over", { winner: room.players[0], positions: room.positions });
+      room.isGameOver = true;
+      return;
+    }
+
+    // ==== Adjust turn index (skip removed player) ====
+    room.currentTurnIndex = room.currentTurnIndex % room.players.length;
+
+  } else {
+    // ==== Simple skip turn ====
+    room.currentTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
+  }
+
+  // ==== Start next player's turn ====
+  io.to(roomId).emit("turn_changed", { playerId: room.players[room.currentTurnIndex].id });
+  startTurnTimer(io, roomId);
+}
 
 module.exports = (io) => {
   io.on("connection", (socket) => {
@@ -35,7 +120,7 @@ module.exports = (io) => {
         };
         waitingPlayers[key].forEach((p) => io.to(p.socketId).emit("match_update", updatePayload));
 
-        // Enough players?
+        
         if (waitingPlayers[key].length >= players) await createRoom(io, key, players);
       } catch (err) {
         console.error("join_match error:", err);
@@ -46,7 +131,7 @@ module.exports = (io) => {
     // ===================== SELECT COLOR =====================
     socket.on("select_color", ({ roomId, userId, color }) => {
       if (!AVAILABLE_COLORS.includes(color) || !roomColorMap[roomId]) return;
-      if (roomColorMap[roomId][color]) return; // already taken
+      if (roomColorMap[roomId][color]) return;
 
       roomColorMap[roomId][color] = userId;
 
@@ -101,7 +186,7 @@ module.exports = (io) => {
     // ===================== ROLL DICE =====================
     socket.on("roll_dice", ({ roomId, playerId }) => {
       const room = activeRooms[roomId];
-      if (!room) return;
+      if (!room || room.isGameOver) return; // changes 3:28- timer
 
       const currentPlayer = room.players[room.currentTurnIndex];
       if (currentPlayer.id !== playerId) {
@@ -125,13 +210,13 @@ module.exports = (io) => {
       }
 
       room.lastDiceValue = diceValue;
-      room.hasRolledDice[currentPlayer.id] = true; 
+      room.hasRolledDice[currentPlayer.id] = true;
 
       io.to(roomId).emit("dice_rolled", { playerId, value: diceValue, rollId: Date.now() });
 
       // ---- AUTO MOVE IF SINGLE PAWN ----
-      const moved = autoMoveIfSinglePawn(io, roomId, room, currentPlayer, diceValue);
-      if (moved) return;
+      // const moved = autoMoveIfSinglePawn(io, roomId, room, currentPlayer, diceValue);
+      // if (moved) return;
 
       const playerPositions = room.positions[currentPlayer.color];
       const allHome = playerPositions.every(pos => pos === 0);
@@ -142,23 +227,32 @@ module.exports = (io) => {
         room.hasRolledDice[currentPlayer.id] = false;
         room.lastDiceValue = 0;
         io.to(roomId).emit("turn_changed", { playerId: room.players[room.currentTurnIndex].id });
-        return; 
+        
+        startTurnTimer(io, roomId); // timmer added 
+        return;
       }
 
       if (allHome && diceValue !== 6) {
+
+        clearTimeout(room.turnTimer);
+        clearInterval(room.turnCountdown);
         // --- no possible move, skip turn ---
-        room.currentTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
-        room.hasRolledDice[currentPlayer.id] = false; 
+        
+        room.hasRolledDice[currentPlayer.id] = false;
         room.lastDiceValue = 0; 
+
+        room.currentTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
         const nextPlayer = room.players[room.currentTurnIndex];
         io.to(roomId).emit("turn_changed", { playerId: nextPlayer.id });
-        return; // stop further processing
+
+        startTurnTimer(io, roomId); 
+        return; 
       }
     });
-// ------- piece move ----------
+// ================ piece move ==================
     socket.on("piece_moved", ({ roomId, color, pawnIndex }) => {
       const room = activeRooms[roomId];
-      if (!room) return;
+      if (!room || room.isGameOver)  return; // changes 3:28- timer
 
       const currentPlayer = room.players[room.currentTurnIndex];
       if (currentPlayer.color !== color) {
@@ -179,7 +273,7 @@ module.exports = (io) => {
 
       const result = ruleEngine.movePiece(room, color, pawnIndex, dice);
 
-    // Agar move valid hai → dice reset karo
+    //======== if not have valid move trun dice reset and change turn ========
     if (!result.error) {
         room.hasRolledDice[currentPlayer.id] = false;
         room.lastDiceValue = 0;
@@ -196,23 +290,28 @@ module.exports = (io) => {
         if (!result.extraTurnRequired) {
             room.currentTurnIndex = result.nextTurnIndex;
             io.to(roomId).emit("turn_changed", { playerId: room.players[room.currentTurnIndex].id });
+            startTurnTimer(io, roomId); // timer added
+        } else { 
+          startTurnTimer(io, roomId); // timer reset is same player again
+        
         }
     } else {
         io.to(socket.id).emit("move_error", { message: result.error });
 
         // Overshoot case → agar turn force change karni hai to hi dice reset karo
         if (result.forceNextTurn) {
-            room.hasRolledDice[currentPlayer.id] = false;
-            room.lastDiceValue = 0;
+            // room.hasRolledDice[currentPlayer.id] = false;
+            // room.lastDiceValue = 0;
             room.currentTurnIndex = result.nextTurnIndex;
             io.to(roomId).emit("turn_changed", { playerId: room.players[room.currentTurnIndex].id });
-        }
-        // otherwise dice wahi rahega → user dusra pawn move kar sakega
+        startTurnTimer(io, roomId); // timer added
+          }
     }
 });
     // ===================== DISCONNECT =====================
     socket.on("disconnect", () => {
       console.log(`❌ Socket disconnected: ${socket.id}`);
+      
       Object.keys(waitingPlayers).forEach((key) => {
         waitingPlayers[key] = waitingPlayers[key].filter((p) => p.socketId !== socket.id);
         const updatePayload = {
@@ -274,12 +373,14 @@ async function createRoom(io, key, playersCount) {
       yellow: [0, 0, 0, 0], 
       blue: [0, 0, 0, 0] },
       lastDiceValue: 0,
-      hasRolledDice: {}
+      hasRolledDice: {},
+      skipCount: {},
+      turnTimer: null,
   };
 
   waitingPlayers[key] = waitingPlayers[key].filter((p) => !seenUserIds.has(p.userId));
 
-  setTimeout(() => autoAssignColors(io, roomCode), 5000);
+  setTimeout(() => autoAssignColors(io, roomCode), 15000);
 }
 
 function autoAssignColors(io, roomCode) {
@@ -300,6 +401,7 @@ function autoAssignColors(io, roomCode) {
       players: activeRooms[roomCode].players.map((mp) => ({ id: mp.id, name: mp.name, avatar: mp.avatar, points: mp.points, color: mp.color })),
     }));
     io.to(roomCode).emit("turn_changed", { playerId: activeRooms[roomCode].players[0].id });
+    startTurnTimer(io, roomCode); 
   }
 }
 
@@ -348,3 +450,4 @@ function autoMoveIfSinglePawn(io, roomId, room, currentPlayer, diceValue) {
   return false;
 }
 
+// now time to splic code : 

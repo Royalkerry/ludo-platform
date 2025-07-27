@@ -1,5 +1,5 @@
 :root {
-  --dice-size: 60px;
+  --dice-size: 40px;
   --dot-size: calc(var(--dice-size) / 6); /* ~10px for 60px dice */
 }
 

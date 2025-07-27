@@ -12,6 +12,8 @@ export const GameProvider = ({ children }) => {
   const [diceDisabled, setDiceDisabled] = useState(false);
   const [users, setUsers] = useState([]);
   const [winner, setWinner] = useState(null);
+  const [turnTimer, setTurnTimer] = useState(30);
+  const [skipCounts, setSkipCounts] = useState({});
   const [playerPositions, setPlayerPositions] = useState({
     red: [0, 0, 0, 0],
     blue: [0, 0, 0, 0],
@@ -86,6 +88,15 @@ export const GameProvider = ({ children }) => {
       setPlayerPositions(positions);
     });
 
+    socket.on("turn_timer", ({ playerId, remaining }) => {
+      setCurrentTurnId(playerId);
+      setTurnTimer(remaining);  // <-- add this in your context state
+    });
+
+    socket.on("player_skipped", ({ playerId, skipCount }) => {
+      setSkipCounts((prev) => ({ ...prev, [playerId]: skipCount }));
+    });
+
 
     return () => {
       socket.off("your_id");
@@ -98,6 +109,7 @@ export const GameProvider = ({ children }) => {
       socket.off("color_update");
       socket.off("match_found");
       socket.off("game_over");
+      socket.off("turn_timer");
     };
   }, []);
 
@@ -147,6 +159,11 @@ export const GameProvider = ({ children }) => {
         winner,
         setWinner,
         currentColor,
+        turnTimer,
+        setTurnTimer,
+        skipCounts,
+        setSkipCounts,
+        
       }}
     >
       {children}

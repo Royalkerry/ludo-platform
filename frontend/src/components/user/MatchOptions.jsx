@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import MatchmakingPopup from "../user/MatchmakingPopup";
 import axios from "../../utils/axiosInstance";
 
+
 const pointOptions = [100, 200, 300, 400, 500, 1000, 2000];
 
 export default function MatchOptions() {
@@ -84,6 +85,7 @@ export default function MatchOptions() {
           </div>
         ))}
       </div>
+      
 
       {showPopup && user && (
         <MatchmakingPopup
