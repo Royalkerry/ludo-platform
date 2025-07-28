@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
     const Game = sequelize.define("Game", {
       roomId: DataTypes.STRING,
-      players: DataTypes.JSON,
+      users: DataTypes.JSON,
       winnerId: DataTypes.INTEGER,
       pointsWon: DataTypes.INTEGER,
       gameType: DataTypes.STRING,

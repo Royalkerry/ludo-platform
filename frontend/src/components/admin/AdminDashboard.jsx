@@ -1,8 +1,4 @@
-// // working file 
-
-import React, {useState} from "react";
-import AdminSidebar from "./AdminSidebar";
-import AdminContent from "./AdminContent";
+import React from "react";
 import useRoleGuard from "@/hooks/useRoleGuard";
 import AdminLayout from "./AdminLayout";
 

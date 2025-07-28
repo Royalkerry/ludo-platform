@@ -38,7 +38,7 @@ export default function GameHistory() {
             <thead>
               <tr className="bg-gray-200 text-gray-700">
                 <th className="px-4 py-3 border text-left">🏠 Room</th>
-                <th className="px-4 py-3 border text-left">👥 Players</th>
+                <th className="px-4 py-3 border text-left">👥 users</th>
                 <th className="px-4 py-3 border text-left">🏆 Winner</th>
                 <th className="px-4 py-3 border text-left">💎 Points</th>
                 <th className="px-4 py-3 border text-left">🎲 Type</th>
@@ -49,7 +49,7 @@ export default function GameHistory() {
               {games.map((g) => (
                 <tr key={g.id} className="hover:bg-gray-50">
                   <td className="border px-4 py-2">{g.roomId}</td>
-                  <td className="border px-4 py-2">{g.players?.map((p) => p.username).join(", ")}</td>
+                  <td className="border px-4 py-2">{g.users?.map((p) => p.username).join(", ")}</td>
                   <td className="border px-4 py-2">{g.winnerId}</td>
                   <td className="border px-4 py-2 text-green-700 font-semibold">{g.pointsWon}</td>
                   <td className="border px-4 py-2 capitalize">{g.gameType}</td>

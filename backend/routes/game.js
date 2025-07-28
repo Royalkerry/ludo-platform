@@ -13,7 +13,7 @@ router.get("/history", async (req, res) => {
   const games = await db.Game.findAll({
     where: {
       endedAt: { [Op.between]: [fromDate, toDate] },
-      players: {
+      users: {
         [Op.like]: `%${userId}%` // crude match
       }
     },

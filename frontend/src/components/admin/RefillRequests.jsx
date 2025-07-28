@@ -26,7 +26,7 @@ export default function RefillRequests() {
     try {
       await axios.post(`/transactions/point-requests/${id}/approve`);
       setRequests((prev) => prev.filter((r) => r.id !== id));
-    } catch (err) {
+    } catch {
       alert("❌ Failed to approve request");
     }
   };
@@ -35,7 +35,7 @@ export default function RefillRequests() {
     try {
       await axios.post(`/transactions/point-requests/${id}/reject`);
       setRequests((prev) => prev.filter((r) => r.id !== id));
-    } catch (err) {
+    } catch {
       alert("❌ Failed to reject request");
     }
   };

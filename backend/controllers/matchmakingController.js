@@ -1,25 +1,25 @@
-const { GameRoom, GamePlayer } = require("../models");
+const { GameRoom, GameUser } = require("../models");
 
-async function autoMatchPlayer(userId, playerCount = 2) {
+async function autoMatchUser(userId, userCount = 2) {
   let room = await GameRoom.findOne({
-    where: { status: "waiting", playerCount },
-    include: [{ model: GamePlayer }],
+    where: { status: "waiting", userCount },
+    include: [{ model: GameUser }],
   });
 
-  if (!room || !room.GamePlayers || room.GamePlayers.length >= playerCount) {
+  if (!room || !room.GameUser || room.GameUser.length >= userCount) {
     // No suitable room found → create new
-    room = await GameRoom.create({ roomCode: `ROOM-${Date.now()}`, playerCount });
-    await GamePlayer.create({ roomId: room.id, userId });
+    room = await GameRoom.create({ roomCode: `ROOM-${Date.now()}`, userCount });
+    await GameUser.create({ roomId: room.id, userId });
 
     // Fallback to AI after 5 seconds if still alone
     setTimeout(async () => {
       const updatedRoom = await GameRoom.findByPk(room.id, {
-        include: [{ model: GamePlayer }],
+        include: [{ model: GameUser }],
       });
-      if (updatedRoom.GamePlayers.length < playerCount) {
-        const missing = playerCount - updatedRoom.GamePlayers.length;
+      if (updatedRoom.GameUser.length < userCount) {
+        const missing = userCount - updatedRoom.GameUser.length;
         for (let i = 0; i < missing; i++) {
-          await GamePlayer.create({ roomId: updatedRoom.id, isAI: true });
+          await GameUser.create({ roomId: updatedRoom.id, isAI: true });
         }
         await updatedRoom.update({ status: "started" });
       }
@@ -29,13 +29,13 @@ async function autoMatchPlayer(userId, playerCount = 2) {
   }
 
   // Room found → join it
-  await GamePlayer.create({ roomId: room.id, userId });
+  await GameUser.create({ roomId: room.id, userId });
 
-  const totalPlayers = room.GamePlayers.length + 1;
-  if (totalPlayers === playerCount) {
+  const totalUsers = room.GameUser.length + 1;
+  if (totalUsers === userCount) {
     await room.update({ status: "started" });
   }
   return room;
 }
 
-module.exports = { autoMatchPlayer };
+module.exports = { autoMatchUser };

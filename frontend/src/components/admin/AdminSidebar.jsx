@@ -69,7 +69,7 @@ export default function AdminSidebar({ onSelect, isOpen, onClose }) {
                 );
                 alert(res.data.message);
                 setProfile((prev) => ({ ...prev, points: res.data.points }));
-              } catch (err) {
+              } catch {
                 alert("❌ Failed to generate points");
               }
             }}

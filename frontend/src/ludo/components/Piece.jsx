@@ -11,8 +11,8 @@ const Piece = ({ color, id }) => {
     const index = parseInt(indexStr, 10);
 
     // Whose turn है check करो
-    const currentPlayer = users.find((u) => u.id === currentTurnId);
-    if (!currentPlayer || currentPlayer.id !== myUserId) return;
+    const currentUser = users.find((u) => u.id === currentTurnId);
+    if (!currentUser || currentUser.id !== myUserId) return;
 
     const diceValue = diceValues[currentTurnId];
     if (!diceValue) return; // अभी dice नहीं फेंका गया

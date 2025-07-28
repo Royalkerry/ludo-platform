@@ -21,13 +21,7 @@ const Home = ({color, children}) => {
         return 'white';
     }
   }
-  function chanceColor(currentPlayer, color) {
-    if (currentPlayer === color) {
-      return `home-inner ${currentPlayer}-chance`;
-    } else {
-      return 'home-inner';
-    }
-  }
+  
   
   return (
     <div id={color+'-home'} className='home' style={{backgroundColor: colorGenerator(color)}}>

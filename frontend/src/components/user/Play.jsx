@@ -21,7 +21,6 @@ const dicePanelPositions = {
 
 const PlayContent = () => {
   const {
-    roomId,
     setRoomId,
     users,
     setUsers,
@@ -40,13 +39,13 @@ const PlayContent = () => {
       socket.emit("get_room_info", { roomId: paramRoomId });
     }
 
-    socket.on("room_info", ({ players, you }) => {
-      setUsers(players);
+    socket.on("room_info", ({ users, you }) => {
+      setUsers(users);
       setMyUserId(you?.id);
     });
 
-    socket.on("turn_changed", ({ playerId }) => {
-      setCurrentTurnId(playerId);
+    socket.on("turn_changed", ({ userId }) => {
+      setCurrentTurnId(userId);
     });
 
     socket.on("disconnect", () => {
@@ -65,13 +64,13 @@ const PlayContent = () => {
       <div className="relative w-full h-full flex items-center justify-center">
         <Board />
         {corners.map(({ pos, token }) => {
-          const player = users.find((u) => u.color === token);
-          if (!player) return null;
+          const user = users.find((u) => u.color === token);
+          if (!user) return null;
           return (
             <div key={token} className={dicePanelPositions[pos]}>
               <DicePanel
-                user={player}
-                isCurrentTurn={currentTurnId === player.id}
+                user={user}
+                isCurrentTurn={currentTurnId === user.id}
               />
             </div>
           );

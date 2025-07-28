@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: "standard", // future-proofing
       },
-      playerCount: {
+      userCount: {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 2,
@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     });
   
     GameRoom.associate = (models) => {
-      GameRoom.hasMany(models.GamePlayer, { foreignKey: "roomId" });
+      GameRoom.hasMany(models.GameUser, { foreignKey: "roomId" });
     };
   
     return GameRoom;

@@ -21,8 +21,7 @@ const useRoleGuard = (expectedRole) => {
         }
 
         // ✅ Role is valid, do nothing
-      } catch (err) {
-        console.warn("🚫 Invalid role or token, logging out.");
+      } catch {
         localStorage.clear();
         navigate("/");
       }

@@ -21,7 +21,7 @@ const Dice = ({ isCurrentTurn, userId }) => {
 
   const handleRoll = () => {
     if (!isCurrentTurn || myUserId !== userId) return;
-    socket.emit("roll_dice", { roomId, playerId: userId });
+    socket.emit("roll_dice", { roomId, userId: userId });
   };
 
   // apne user ke dice value change hone par hi animate karo
@@ -29,7 +29,7 @@ const Dice = ({ isCurrentTurn, userId }) => {
     const diceData = diceValues[userId];
     if (!diceData) return;
 
-    const { value, rollId } = diceData;
+    const { value } = diceData;
     const base = faceRotation[value];
     const randX = base.x + 360 * (3 + Math.floor(Math.random() * 2));
     const randY = base.y + 360 * (3 + Math.floor(Math.random() * 2));
@@ -45,8 +45,6 @@ const Dice = ({ isCurrentTurn, userId }) => {
     }, 600);
     return () => clearTimeout(t);
   }, [diceValues[userId]?.rollId]);
-
-  const value = diceValues[userId]?.value || 1;
 
   return (
     <div className="dice-container" onClick={handleRoll}>

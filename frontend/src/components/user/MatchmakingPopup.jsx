@@ -9,8 +9,9 @@ export default function MatchmakingPopup({
   selectedMode,
   onMatchSuccess,
   onClose,
+  mode, // <-- added prop
 }) {
-  const [players, setPlayers] = useState([]);
+  const [users, setUsers] = useState([]);
   const [selectedColor, setSelectedColor] = useState(null);
   const [lockedColors, setLockedColors] = useState([]);
   const [roomId, setRoomId] = useState(null);
@@ -19,48 +20,59 @@ export default function MatchmakingPopup({
   useEffect(() => {
     if (!user || !selectedPoints || !selectedMode) return;
 
-    const selfPlayer = {
-      userId: user.id,
-      name: user.username,
-      avatar: user.avatar || "👤",
-    };
-    setPlayers([selfPlayer]);
+    const startMatchmaking = () => {
+      const selfUser = {
+        userId: user.id,
+        name: user.username,
+        avatar: user.avatar || "👤",
+      };
+      setUsers([selfUser]);
 
-    socket.emit("join_match", {
-      userId: user.id,
-      name: user.username,
-      avatar: user.avatar || "👤",
-      points: selectedPoints,
-      players: selectedMode,
+      socket.emit("join_match", {
+        userId: user.id,
+        name: user.username,
+        avatar: user.avatar || "👤",
+        points: selectedPoints,
+        users: selectedMode,
+      });
+    };
+
+    // ===== SOCKET LISTENERS =====
+    socket.on("room_info", (data) => {
+      console.log("Rejoin success, navigating...", data.roomId);
+      onMatchSuccess(data.roomId, data.users);
+    });
+
+    socket.on("rejoin_failed", () => {
+      console.log("No active game, starting matchmaking");
+      startMatchmaking();
     });
 
     socket.on("match_update", (data) => {
-      const normalizedPlayers = data.players.map((p) => ({
+      const normalizedUsers = data.users.map((p) => ({
         userId: p.userId || p.id,
         name: p.name,
         avatar: p.avatar || "👤",
         selectedColor: p.selectedColor || null,
       }));
-      setPlayers(normalizedPlayers);
+      setUsers(normalizedUsers);
     });
 
-    socket.on("color_selection_start", ({ roomId, availableColors, players }) => {
-      const normalizedPlayers = players.map((p) => ({
+    socket.on("color_selection_start", ({ roomId, users }) => {
+      const normalizedUsers = users.map((p) => ({
         userId: p.userId || p.id,
         name: p.name,
         avatar: p.avatar || "👤",
         selectedColor: p.selectedColor || null,
       }));
       setRoomId(roomId);
-      setPlayers(normalizedPlayers);
+      setUsers(normalizedUsers);
       setLockedColors([]);
-
-      // start/restart countdown
-      setCountdown(15);
+      setCountdown(15); // start countdown
     });
 
     socket.on("color_update", ({ userId, color, takenColors }) => {
-      setPlayers((prev) =>
+      setUsers((prev) =>
         prev.map((p) =>
           p.userId === userId ? { ...p, selectedColor: color } : p
         )
@@ -72,24 +84,29 @@ export default function MatchmakingPopup({
       onMatchSuccess(data.roomId);
     });
 
+    // === Only start matchmaking automatically if mode = "new" ===
+    if (mode === "new") {
+      startMatchmaking();
+    }
+
     return () => {
       socket.emit("leave_queue", { userId: user.id });
       setCountdown(null);
+      socket.off("room_info");
+      socket.off("rejoin_failed");
       socket.off("match_update");
       socket.off("color_selection_start");
       socket.off("color_update");
       socket.off("match_found");
     };
-  }, [user, selectedPoints, selectedMode, onMatchSuccess, onClose]);
+  }, [user, selectedPoints, selectedMode, mode, onMatchSuccess]);
 
   // countdown effect
   useEffect(() => {
     if (countdown === null || countdown === 0) return;
-
     const timer = setInterval(() => {
       setCountdown((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
-
     return () => clearInterval(timer);
   }, [countdown]);
 
@@ -113,35 +130,35 @@ export default function MatchmakingPopup({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-6 text-center shadow-lg w-[90%] max-w-md">
         <h2 className="text-xl font-bold mb-4 text-yellow-800">
-          {roomId ? "Select Your Color" : "Finding Players..."}
+          {roomId ? "Select Your Color" : "Finding users..."}
         </h2>
         {roomId && countdown !== null && (
           <p className="text-red-500 font-bold text-lg mb-2">
             Auto assign in {countdown}s
           </p>
         )}
-        <p className="text-gray-600 mb-2">Mode: {selectedMode}-Player</p>
+        <p className="text-gray-600 mb-2">Mode: {selectedMode}-User</p>
         <p className="text-gray-600 mb-4">Points: {selectedPoints}</p>
 
-        {/* players */}
+        {/* users */}
         <div className="grid grid-cols-2 gap-4 mb-4">
           {Array.from({ length: selectedMode }).map((_, i) => {
-            const player = players[i];
+            const u = users[i];
             return (
               <div
                 key={i}
                 className={`flex flex-col items-center border rounded-xl p-2 ${
-                  player ? "bg-green-100 border-green-400" : "bg-gray-100"
+                  u ? "bg-green-100 border-green-400" : "bg-gray-100"
                 }`}
               >
                 <div
                   className="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold"
-                  style={{ backgroundColor: player?.selectedColor || "gray" }}
+                  style={{ backgroundColor: u?.selectedColor || "gray" }}
                 >
-                  {player?.avatar || "👤"}
+                  {u?.avatar || "👤"}
                 </div>
                 <div className="text-sm mt-1 font-medium text-gray-800">
-                  {player?.name || "Waiting..."}
+                  {u?.name || "Waiting..."}
                 </div>
               </div>
             );

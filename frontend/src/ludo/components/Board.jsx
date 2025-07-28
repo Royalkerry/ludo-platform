@@ -7,18 +7,18 @@ import { useGameContext } from "../context/GameContext";
 import "../styles/Board.css";
 
 const Board = () => {
-  const { playerPositions, users, currentTurnId, winner} = useGameContext();
+  const { userPositions, users, currentTurnId, winner} = useGameContext();
   const [layout, setLayout] = useState(trackLayout);
   const HOME_ORDER = ["yellow", "green", "red", "blue"];
 
-  // Current player color
-  const currentPlayer = users.find((u) => u.id === currentTurnId);
-  const currentColor = currentPlayer?.color;
+  // Current user color
+  const currentUser = users.find((u) => u.id === currentTurnId);
+  const currentColor = currentUser?.color;
 
   useEffect(() => {
     const updatedLayout = { ...trackLayout };
     Object.values(updatedLayout).forEach((cell) => (cell.Piece = []));
-    Object.entries(playerPositions).forEach(([color, positions = []]) => {
+    Object.entries(userPositions).forEach(([color, positions = []]) => {
       positions.forEach((pos, index) => {
         if (pos === 999) {
           updatedLayout["ww"]?.Piece.push(`${color}-${index}`);
@@ -28,7 +28,7 @@ const Board = () => {
       });
     });
     setLayout(updatedLayout);
-  }, [playerPositions]);
+  }, [userPositions]);
   
   return (
     <div id="board" className="relative mx-auto">
@@ -39,7 +39,7 @@ const Board = () => {
           color={color}
           className={color === currentColor ? "glow-home" : ""}
         >
-          {playerPositions[color]?.map((position, index) =>
+          {userPositions[color]?.map((position, index) =>
             position === 0 ? (
               <Piece key={index} id={`${color}-${index}`} color={color} />
             ) : null

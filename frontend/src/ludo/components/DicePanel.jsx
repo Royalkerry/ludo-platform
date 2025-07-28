@@ -26,7 +26,7 @@ const DicePanel = ({ user }) => {
     >
       <audio ref={audioRef} src="/turn-alert.mp3" preload="auto" />
 
-      {/* === Player Color Dot (Top Left) === */}
+      {/* === user Color Dot (Top Left) === */}
       <span
         className="absolute top-1 left-2 w-3 h-3 rounded-full shadow"
         style={{ backgroundColor: user.color || "gray" }}
@@ -38,7 +38,7 @@ const DicePanel = ({ user }) => {
           <span
             key={i}
             className={`text-lg ${
-              i <= skipCount ? "text-red-500" : "text-gray-300 animate-pulse"
+              i <= skipCount ? "text-red-500 animate-pulse" : "text-gray-300 animate-pulse"
             }`}
           >
             ●
@@ -68,11 +68,13 @@ const DicePanel = ({ user }) => {
 
       {/* === Bottom Timer Bar === */}
       <div className="absolute bottom-2 left-0 w-full h-2 bg-gray-200 rounded-b-xl overflow-hidden">
-        <div
-          className="h-full bg-yellow-400 transition-all duration-500"
-          style={{ width: `${progress * 100}%` }}
-        ></div>
-    </div>
+  <div
+    className={`h-full transition-all duration-500 ${
+      safeTimer <= 5 && isCurrentTurn ? "bg-red-500" : "bg-yellow-400"
+    }`}
+    style={{ width: `${progress * 100}%` }}
+  ></div>
+</div>
     </div>
   );
 };

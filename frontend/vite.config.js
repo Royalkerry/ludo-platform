@@ -1,29 +1,19 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path';
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import tailwindcss from '@tailwindcss/vite';
 
-import tailwindcss from '@tailwindcss/vite'
-// https://vite.dev/config/
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-const socketURL = process.env.VITE_BACKEND_SOCKET_URL || "http://localhost:5000";
+
+
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
-  
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  
-})
-
-// change it when upload in server 
-// import { defineConfig } from 'vite';
-// import react from '@vitejs/plugin-react';
-
-// export default defineConfig({
-//   plugins: [react()],
-//   server: {
-//     historyApiFallback: true
-//   }
-// });
+});

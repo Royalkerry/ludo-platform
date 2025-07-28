@@ -26,7 +26,7 @@ const useGameStore = create((set, get) => ({
   setUsername: (username) => set({ username }),
 
   // ✅ LOBBY state
-  gameType: "2-player",
+  gameType: "2-user",
   setGameType: (gameType) => set({ gameType }),
 
   coinAmount: 100,
@@ -36,7 +36,7 @@ const useGameStore = create((set, get) => ({
   setRoom: (room) => set({ room }),
 
   // ✅ GAME state
-  currentPlayer: "red",
+  currentUser: "red",
   diceValue: null,
   isRolling: false,
   pawns: createPawns(),
@@ -49,14 +49,14 @@ const useGameStore = create((set, get) => ({
   nextTurn: () => {
     set((state) => {
       const next =
-        state.currentPlayer === "red"
+        state.currentUser === "red"
           ? "green"
-          : state.currentPlayer === "green"
+          : state.currentUser === "green"
           ? "yellow"
-          : state.currentPlayer === "yellow"
+          : state.currentUser === "yellow"
           ? "blue"
           : "red";
-      return { currentPlayer: next, diceValue: null };
+      return { currentUser: next, diceValue: null };
     });
   },
 
@@ -111,20 +111,20 @@ const useGameStore = create((set, get) => ({
   },
 
   checkWin: () => {
-    const { pawns, currentPlayer } = get();
+    const { pawns, currentUser } = get();
     const finished = pawns.filter(
       (p) =>
-        p.color === currentPlayer && p.index === paths[p.color].length - 1
+        p.color === currentUser && p.index === paths[p.color].length - 1
     ).length;
 
     if (finished === 4) {
-      alert(`🎉 ${currentPlayer.toUpperCase()} wins the game!`);
+      alert(`🎉 ${currentUser.toUpperCase()} wins the game!`);
     }
   },
 
   resetGame: () => {
     set({
-      currentPlayer: "red",
+      currentUser: "red",
       diceValue: null,
       pawns: createPawns()
     });

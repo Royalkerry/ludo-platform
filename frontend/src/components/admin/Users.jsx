@@ -15,7 +15,7 @@ export default function Users() {
   const [loginInfoData, setLoginInfoData] = useState({});
 
   const token = localStorage.getItem("adminToken");
-  const currentUser = JSON.parse(localStorage.getItem("user"));
+  // const currentUser = JSON.parse(localStorage.getItem("user"));
 
   const axiosConfig = {
     headers: { Authorization: `Bearer ${token}` }

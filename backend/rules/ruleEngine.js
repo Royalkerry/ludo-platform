@@ -120,7 +120,7 @@ module.exports = {
                     error: allHome ? "all pawns home" : "no move from home",
                     positions: room.positions,
                     killed: false,
-                    nextTurnIndex: (room.currentTurnIndex + 1) % room.players.length,
+                    nextTurnIndex: (room.currentTurnIndex + 1) % room.users.length,
                     extraTurnRequired: false,
                     forceNextTurn: allHome
                 };
@@ -139,7 +139,7 @@ module.exports = {
                 error: "overshoot not allowed",
                 positions: room.positions,
                 killed: false,
-                nextTurnIndex: (room.currentTurnIndex + 1) % room.players.length,
+                nextTurnIndex: (room.currentTurnIndex + 1) % room.users.length,
                 extraTurnRequired: false,
                 forceNextTurn: (activePawns ===1)
             };
@@ -156,7 +156,7 @@ module.exports = {
         if (dice === 6 || killed || pawnReachedHome) {
             extraTurnRequired = true;
         } else {
-            nextTurnIndex = (room.currentTurnIndex + 1) % room.players.length;
+            nextTurnIndex = (room.currentTurnIndex + 1) % room.users.length;
         }
 
         // Check win

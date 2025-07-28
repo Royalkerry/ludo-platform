@@ -5,21 +5,21 @@ import Piece from './Piece'
 
 const Square = () => {
 
-  const { playerPositions } = useGameContext();
+  const { userPositions } = useGameContext();
 
-  const redWinner = playerPositions['red'].map((position, index) => {
+  const redWinner = userPositions['red'].map((position, index) => {
     return position === 999 ? <Piece key={index} id={`red-${index}`} color={'red'} /> : null;
   });
 
-  const yellowWinner = playerPositions['yellow'].map((position, index) => {
+  const yellowWinner = userPositions['yellow'].map((position, index) => {
     return position === 999 ? <Piece key={index} id={`yellow-${index}`} color={'yellow'} /> : null;
   });
 
-  const greenWinner = playerPositions['green'].map((position, index) => {
+  const greenWinner = userPositions['green'].map((position, index) => {
     return position === 999 ? <Piece key={index} id={`green-${index}`} color={'green'} /> : null;
   });
 
-  const blueWinner = playerPositions['blue'].map((position, index) => {
+  const blueWinner = userPositions['blue'].map((position, index) => {
     return position === 999 ? <Piece key={index} id={`blue-${index}`} color={'blue'} /> : null;
   });
 

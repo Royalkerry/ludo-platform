@@ -15,7 +15,7 @@ export default function RefillRequest() {
       setMessage("✅ Refill request submitted successfully!");
       setAmount("");
       setNote("");
-    } catch (err) {
+    } catch {
       setMessage("❌ Failed to submit request.");
     }
   };

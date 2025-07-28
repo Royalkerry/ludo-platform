@@ -1,4 +1,4 @@
-// src/ludo/context/GameContext.jsx
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useState, useEffect } from "react";
 import socket from "../../utils/socket";
 
@@ -8,13 +8,13 @@ export const useGameContext = () => useContext(GameContext);
 export const GameProvider = ({ children }) => {
   const [roomId, setRoomId] = useState(null);
   const [diceValues, setDiceValues] = useState({});
-  const [dice, setDice] = useState({value:1, rollId:0});
+  const [dice, setDice] = useState({ value: 1, rollId: 0 });
   const [diceDisabled, setDiceDisabled] = useState(false);
   const [users, setUsers] = useState([]);
   const [winner, setWinner] = useState(null);
   const [turnTimer, setTurnTimer] = useState(30);
   const [skipCounts, setSkipCounts] = useState({});
-  const [playerPositions, setPlayerPositions] = useState({
+  const [userPositions, setUserPositions] = useState({
     red: [0, 0, 0, 0],
     blue: [0, 0, 0, 0],
     green: [0, 0, 0, 0],
@@ -23,80 +23,57 @@ export const GameProvider = ({ children }) => {
   const [currentTurnId, setCurrentTurnId] = useState(null);
   const [myUserId, setMyUserId] = useState(null);
 
-  const startingCells = {
-    red: 1,
-    yellow: 14,
-    green: 27,
-    blue: 40,
-  };
-
-  const homeEntry = {
-    red: 52,
-    yellow: 13,
-    green: 26,
-    blue: 39,
-  };
-
-  const homeTracks = {
-    red: [101, 102, 103, 104, 105],
-    yellow: [201, 202, 203, 204, 205],
-    green: [301, 302, 303, 304, 305],
-    blue: [401, 402, 403, 404, 405],
-  };
-
-  // ===== Pawn Move Logic =====
   const movePawn = (color, pawnIndex, steps) => {
     if (roomId && myUserId) {
       socket.emit("piece_moved", { roomId, color, pawnIndex, steps });
     }
   };
 
-  // ==== Socket Listeners ====
   useEffect(() => {
     socket.on("your_id", (userId) => setMyUserId(userId));
 
-    socket.on("room_info", ({ roomId, players, you }) => {
+    socket.on("room_info", ({ roomId, users, you }) => {
       if (roomId) setRoomId(roomId);
-      setUsers(players);
+      setUsers(users);
       setMyUserId(you?.id);
+      socket.emit("get_positions", { roomId });
     });
 
-    socket.on("position_update", (positions) => setPlayerPositions(positions));
+    socket.on("position_update", (positions) => setUserPositions(positions));
+    socket.on("turn_update", ({ userId }) => setCurrentTurnId(userId));
+    socket.on("turn_changed", ({ userId }) => setCurrentTurnId(userId));
 
-    socket.on("turn_update", ({ playerId }) => setCurrentTurnId(playerId));
-    socket.on("turn_changed", ({ playerId }) => setCurrentTurnId(playerId));
-
-    socket.on("dice_rolled", ({ playerId, value, rollId }) => {
-      setDiceValues((prev) => ({ ...prev, [playerId]: {value, rollId} }));
+    socket.on("dice_rolled", ({ userId, value, rollId }) => {
+      setDiceValues((prev) => ({ ...prev, [userId]: { value, rollId } }));
     });
 
-    socket.on("color_selection_start", ({ roomId, availableColors, players }) => {
+    socket.on("color_selection_start", ({ roomId, users }) => {
       setRoomId(roomId);
-      setUsers(players);
+      setUsers(users);
     });
 
     socket.on("color_update", ({ userId, color }) => {
       setUsers((prev) => prev.map((p) => (p.id === userId ? { ...p, color } : p)));
     });
 
-    socket.on("match_found", ({ roomId, players }) => {
+    socket.on("match_found", ({ roomId, users }) => {
       setRoomId(roomId);
-      setUsers(players);
+      setUsers(users);
     });
+
     socket.on("game_over", ({ winner, positions }) => {
       setWinner(winner);
-      setPlayerPositions(positions);
+      setUserPositions(positions);
     });
 
-    socket.on("turn_timer", ({ playerId, remaining }) => {
-      setCurrentTurnId(playerId);
-      setTurnTimer(remaining);  // <-- add this in your context state
+    socket.on("turn_timer", ({ userId, remaining }) => {
+      setCurrentTurnId(userId);
+      setTurnTimer(remaining);
     });
 
-    socket.on("player_skipped", ({ playerId, skipCount }) => {
-      setSkipCounts((prev) => ({ ...prev, [playerId]: skipCount }));
+    socket.on("user_skipped", ({ userId, skipCount }) => {
+      setSkipCounts((prev) => ({ ...prev, [userId]: skipCount }));
     });
-
 
     return () => {
       socket.off("your_id");
@@ -110,8 +87,13 @@ export const GameProvider = ({ children }) => {
       socket.off("match_found");
       socket.off("game_over");
       socket.off("turn_timer");
+      socket.off("user_skipped");
     };
   }, []);
+
+  useEffect(() => {
+    setDiceDisabled(currentTurnId !== myUserId);
+  }, [currentTurnId, myUserId]);
 
   const selectColor = (color) => {
     if (roomId && myUserId) {
@@ -121,7 +103,7 @@ export const GameProvider = ({ children }) => {
 
   const rollDice = () => {
     if (roomId && myUserId) {
-      socket.emit("roll_dice", { roomId, playerId: myUserId });
+      socket.emit("roll_dice", { roomId, userId: myUserId });
     }
   };
 
@@ -131,8 +113,22 @@ export const GameProvider = ({ children }) => {
     }
   }, [roomId]);
 
-  const currentPlayer = users.find((u) => u.id === currentTurnId);
-  const currentColor = currentPlayer?.color || null;
+  const currentUser = users.find((u) => u.id === currentTurnId);
+  const currentColor = currentUser?.color || null;
+
+  // new changes for user choice for rejoin
+
+  const checkActiveRoom = (userId, callback) => {
+    socket.emit("check_active_room", { userId });
+
+    socket.once("active_room_found", (data) => {
+      callback({ found: true, data });
+    });
+
+    socket.once("no_active_room", () => {
+      callback({ found: false });
+    });
+  };
 
   return (
     <GameContext.Provider
@@ -141,8 +137,8 @@ export const GameProvider = ({ children }) => {
         setRoomId,
         users,
         setUsers,
-        playerPositions,
-        setPlayerPositions,
+        userPositions,
+        setUserPositions,
         currentTurnId,
         setCurrentTurnId,
         myUserId,
@@ -163,11 +159,10 @@ export const GameProvider = ({ children }) => {
         setTurnTimer,
         skipCounts,
         setSkipCounts,
-        
+        checkActiveRoom,
       }}
     >
       {children}
-    </GameContext.Provider>
+        </GameContext.Provider>
   );
 };
-// nahi chala to undu kr do ye msg read hone tak 

@@ -17,7 +17,7 @@ export default function WithdrawRequest() {
       setMessage("✅ Withdrawal request submitted successfully!");
       setAmount("");
       setNote("");
-    } catch (err) {
+    } catch {
       setMessage("❌ Failed to submit request.");
     }
   };

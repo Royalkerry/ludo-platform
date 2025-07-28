@@ -13,9 +13,6 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("adminToken") || localStorage.getItem("userToken");
-    
-    
-    const isPublicRoute = config.url.includes("/auth/login") || config.url.includes("/auth/register");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     } else {
