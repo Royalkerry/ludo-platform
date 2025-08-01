@@ -3,6 +3,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
     cursor: pointer;
     box-shadow: 0 0 10px #000;
     border-radius: 5%;
@@ -14,6 +15,7 @@
     background-color: white;
     border-radius: 10%;
     display: grid;
+    position: relative;
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 1fr);
     box-shadow: 0 0 10px #000;

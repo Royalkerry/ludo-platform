@@ -24,8 +24,25 @@ const Home = ({color, children}) => {
   
   
   return (
-    <div id={color+'-home'} className='home' style={{backgroundColor: colorGenerator(color)}}>
-      <div className={`home-inner ${isActive ? `${color}-chance` : ""}`}>
+    <div
+      id={color + '-home'}
+      className="home relative"
+      style={{ backgroundColor: colorGenerator(color) }}
+    >
+      <div className={`home-inner ${isActive ? `${color}-chance` : ""} relative w-full h-full`}>
+        
+        {/* --- 2x2 Placeholder Circles --- */}
+        <div className="absolute inset-0 grid grid-cols-2 grid-rows-2 place-items-center opacity-50 pointer-events-none">
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="w-10 h-10 rounded-full border-5"
+              style={{ borderColor: colorGenerator(color) }}
+            />
+          ))}
+        </div>
+
+        {/* --- Pawns --- */}
         {children}
       </div>
     </div>

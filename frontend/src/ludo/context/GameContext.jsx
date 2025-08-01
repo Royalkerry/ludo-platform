@@ -14,6 +14,7 @@ export const GameProvider = ({ children }) => {
   const [winner, setWinner] = useState(null);
   const [turnTimer, setTurnTimer] = useState(30);
   const [skipCounts, setSkipCounts] = useState({});
+  const [rankings, setRankings] = useState([]);
   const [userPositions, setUserPositions] = useState({
     red: [0, 0, 0, 0],
     blue: [0, 0, 0, 0],
@@ -75,6 +76,10 @@ export const GameProvider = ({ children }) => {
       setSkipCounts((prev) => ({ ...prev, [userId]: skipCount }));
     });
 
+    socket.on("ranking_update", (data) => {
+      setRankings(data.rankings);
+    });
+
     return () => {
       socket.off("your_id");
       socket.off("room_info");
@@ -88,6 +93,7 @@ export const GameProvider = ({ children }) => {
       socket.off("game_over");
       socket.off("turn_timer");
       socket.off("user_skipped");
+      socket.off("ranking_update");
     };
   }, []);
 
@@ -160,6 +166,8 @@ export const GameProvider = ({ children }) => {
         skipCounts,
         setSkipCounts,
         checkActiveRoom,
+        rankings,
+        setRankings,
       }}
     >
       {children}

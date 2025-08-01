@@ -1,20 +1,24 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    content: [
-      "./index.html",
-      "./src/**/*.{js,ts,jsx,tsx}",
-    ],
-    theme: {
-      fontSize: {
-        base: '14px',  // make text smaller everywhere
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    fontSize: {
+      base: '14px',
+    },
+    extend: {
+      colors: {
+        primary: '#ef320a',
       },
-      extend: {
-        colors: {
-          primary: '#ef320a',  // your brand color
-        },
+      gridTemplateColumns: {
+        15: 'repeat(15, minmax(0, 1fr))',  // 👈 required
+      },
+      gridTemplateRows: {
+        15: 'repeat(15, minmax(0, 1fr))',  // 👈 required
       },
     },
-    
-    plugins: [],
-  };
-  
+  },
+  plugins: [],
+};

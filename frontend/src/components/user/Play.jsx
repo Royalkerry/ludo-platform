@@ -1,3 +1,5 @@
+// Play.jsx – Ludo Game Main Play Screen
+
 import React, { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useGameContext, GameProvider } from "../../ludo/context/GameContext";
